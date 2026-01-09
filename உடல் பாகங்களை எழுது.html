@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<title>உடல் உறுப்புகளின் பெயர் எழுது</title>
+
+<style>
+body{
+    font-family: Arial;
+    background:#eaf6ff;
+    text-align:center;
+}
+.container{
+    position:relative;
+    width:600px;
+    margin:auto;
+}
+.container img{
+    width:100%;
+}
+input{
+    position:absolute;
+    width:120px;
+    padding:6px;
+    font-size:14px;
+    text-align:center;
+}
+
+/* LEFT SIDE BOXES */
+#புருவம் { top: 120px; left:10px; }
+#காது    { top:170px; left:10px; }
+#மூக்கு { top: 250px;left:25px; }
+#பல் { top:300px; left:60px; }
+#நாக்கு{ top:370px; left:10px; }
+#கை{ top:440px; left:10px; }
+#வயிறு{ top:500px; left:10px; }
+#பாதம் { top:650px; left:15px; }
+
+/* RIGHT SIDE BOXES */
+#முடி   { top:60px; right:60px; }
+#கண் { top:150px; right:10px; }
+#கைவிரல் { top:200px; right:10px; }
+#முழங்கை  { top:320px; right:10px; }
+#இடுப்பு  { top:470px; right:10px; }
+#நெஞ்சு   { top:420px; right:10px; }
+#கால்    { top:520px; right:30px; }
+
+button{
+    margin-top:20px;
+    padding:10px 20px;
+    font-size:18px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>👦 உடல் உறுப்புகளின் பெயர் எழுது</h2>
+
+<div class="container">
+    <img src="css/images/body parts.jpg">
+
+    <!-- LEFT -->
+    <input id="புருவம்" placeholder="இங்கே எழுதவும்">
+    <input id="காது" placeholder="இங்கே எழுதவும்">
+    <input id="மூக்கு" placeholder="இங்கே எழுதவும்">
+    <input id="பல்" placeholder="இங்கே எழுதவும்">
+    <input id="நாக்கு" placeholder="இங்கே எழுதவும்">
+    <input id="கை" placeholder="இங்கே எழுதவும்">
+    <input id="வயிறு" placeholder="இங்கே எழுதவும்">
+    <input id="பாதம்" placeholder="இங்கே எழுதவும்">
+
+    <!-- RIGHT -->
+    <input id="முடி" placeholder="இங்கே எழுதவும்">
+    <input id="கண்" placeholder="இங்கே எழுதவும்">    
+    <input id="கைவிரல்" placeholder="இங்கே எழுதவும்">
+    <input id="நெஞ்சு" placeholder="இங்கே எழுதவும்">
+    <input id="இடுப்பு" placeholder="இங்கே எழுதவும்">
+    <input id="கால்" placeholder="இங்கே எழுதவும்">
+    <input id="முழங்கை" placeholder="இங்கே எழுதவும்">
+</div>
+
+<button onclick="check()">Submit</button>
+<h3 id="result"></h3>
+
+<script>
+const answers = {
+  புருவம்:"புருவம்",
+  முடி:"முடி",
+  கண்:"கண்",
+  காது:"காது",
+  மூக்கு:"மூக்கு",
+  பல்:"பல்",
+  நாக்கு:"நாக்கு",
+  கை:"கை",
+  வயிறு:"வயிறு",
+  நெஞ்சு:"நெஞ்சு",
+  இடுப்பு:"இடுப்பு",
+  முழங்கை:"முழங்கை",
+  கைவிரல்:"கைவிரல்",
+  கால்:"கால்",
+  பாதம்:"பாதம்"
+};
+
+function check(){
+  let score = 0;
+  let total = Object.keys(answers).length;
+
+  for(let id in answers){
+    let input = document.getElementById(id);
+    let val = input.value.trim();
+
+    if(val === answers[id]){
+      input.style.border = "2px solid green";
+      score++;
+    }else{
+      input.style.border = "2px solid red";
+    }
+  }
+
+  document.getElementById("result").innerHTML =
+    `மதிப்பெண் : ${score} / ${total}`;
+}
+</script>
+
+
+</body>
+</html>

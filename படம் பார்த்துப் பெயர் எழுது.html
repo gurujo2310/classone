@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<title>படம் பெயர் எழுதும் பாடம்</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f2f9ff;
+    text-align: center;
+}
+.container {
+    max-width: 500px;
+    margin: auto;
+    background: rgb(185, 233, 236);
+    padding: 20px;
+    border-radius: 10px;
+}
+img {
+    width: 200px;
+    height: 160px;
+    border-radius: 10px;
+    
+}
+input {
+    font-size: 18px;
+    padding: 10px;
+    width: 80%;
+}
+button {
+    padding: 10px 20px;
+    font-size: 18px;
+    margin-top: 15px;
+}
+.correct { color: green; }
+.wrong { color: red; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>படத்தை பார்த்து பெயரை எழுதுங்கள்</h2>
+
+    <img id="image" src="">
+    <br><br>
+
+    <input type="text" id="answer" placeholder="பெயரை எழுதவும்">
+    <br>
+
+    <button onclick="checkAnswer()">சரி பார்க்க</button>
+
+    <p id="result"></p>
+    <p id="count"></p>
+</div>
+
+<script>
+const questions = [
+    {img: "css/images/அணில்.jpg", ans: "அணில்"},
+    {img: "css/images/எலி.jpg", ans: "எலி"},
+    {img: "css/images/கழுதை.jpg", ans: "கழுதை"},
+    {img: "css/images/காகம்.jpg", ans: "காகம்"},
+    {img: "css/images/காலணி.jpg", ans: "காலணி"},
+    {img: "css/images/காளை.jpg", ans: "காளை"},
+    {img: "css/images/குடம்.jpg", ans: "குடம்"},
+    {img: "css/images/குதிரை.jpg", ans: "குதிரை"},
+    {img: "css/images/குரங்கு.jpg", ans: "குரங்கு"},
+    {img: "css/images/இலை.jpg", ans: "இலை"},
+    {img: "css/images/ஆரஞ்சு.jpg", ans: "ஆரஞ்சு"},
+    {img: "css/images/இளநீர்.jpg", ans: "இளநீர்"},
+    {img: "css/images/ஓநாய்.jpg", ans: "ஓநாய்"},
+    {img: "css/images/கொக்கு.jpg", ans: "கொக்கு"},
+    {img: "css/images/கொய்யா.jpg", ans: "கொய்யா"},
+    {img: "css/images/கோழி.jpeg", ans: "கோழி"},
+    {img: "css/images/ஒட்டகம்.jpg", ans: "ஒட்டகம்"},
+    {img: "css/images/காண்டாமிருகம்.jpg", ans: "காண்டாமிருகம்"},
+    {img: "css/images/பானை.jpg", ans: "பானை"},
+    {img: "css/images/பூனை.jpg", ans: "பூனை"},
+    {img: "css/images/சிங்கம்.jpg", ans: "சிங்கம்"},
+    {img: "css/images/யானை.jpg", ans: "யானை"},
+    {img: "css/images/நாய்.jpg", ans: "நாய்"},
+    {img: "css/images/கரடி.jpg", ans: "கரடி"},
+    {img: "css/images/மீன்.jpeg", ans: "மீன்"},
+    {img: "css/images/நத்தை.jpeg", ans: "நத்தை"},
+    {img: "css/images/சிறுத்தை.jpg", ans: "சிறுத்தை"},
+    {img: "css/images/புலி.jpg", ans: "புலி"},
+    {img: "css/images/பசு.jpg", ans: "பசு"},
+    {img: "css/images/எருமை.jpg", ans: "எருமை"},
+    {img: "css/images/ஆடு.jpg", ans: "ஆடு"},
+    {img: "css/images/பன்றி.jpg", ans: "பன்றி"},
+    {img: "css/images/வௌவால்.jpg", ans: "வௌவால்"},
+    {img: "css/images/ஆமை.jpg", ans: "ஆமை"},
+    {img: "css/images/அட்டை.jpg", ans: "அட்டை"},
+    {img: "css/images/பூரான்.jpeg", ans: "பூரான்"},
+    {img: "css/images/மயில்.jpg", ans: "மயில்"},
+    {img: "css/images/குருவி.jpg", ans: "குருவி"},
+    {img: "css/images/பச்சோந்தி.jpg", ans: "பச்சோந்தி"},
+     {img: "css/images/அரளி.jpg", ans: "அரளி"},
+    {img: "css/images/அல்லி.jpg", ans: "அல்லி"},
+    {img: "css/images/ஈ.jpg", ans: "ஈ"},
+    {img: "css/images/முட்டை.jpeg", ans: "முட்டை"},
+    {img: "css/images/பட்டாம்பூச்சி.jpg", ans: "பட்டாம்பூச்சி"},
+    {img: "css/images/கழுகு.jpg", ans: "கழுகு"},
+    {img: "css/images/செம்மறி ஆடு.jpg", ans: "செம்மறி ஆடு"},
+    {img: "css/images/முதலை.png", ans: "முதலை"},
+    {img: "css/images/வரிக்குதிரை.jpg", ans: "வரிக்குதிரை"},
+    {img: "css/images/ஒட்டகச்சிவிங்கி.jpg", ans: "ஒட்டகச்சிவிங்கி"},
+    {img: "css/images/வான்கோழி.jpg", ans: "வான்கோழி"},
+    {img: "css/images/வாத்து.jpg", ans: "வாத்து"},
+    
+
+    // 👉 இங்கே இதே மாதிரி 100 வரை சேர்க்கலாம்
+];
+
+let current = 0;
+let score = 0;
+
+loadQuestion();
+
+function loadQuestion() {
+    document.getElementById("image").src = questions[current].img;
+    document.getElementById("answer").value = "";
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("count").innerHTML =
+        `படம் ${current + 1} / ${questions.length}`;
+}
+
+function checkAnswer() {
+    let userAns = document.getElementById("answer").value.toLowerCase().trim();
+    let correctAns = questions[current].ans;
+
+    if (userAns === correctAns) {
+        document.getElementById("result").innerHTML =
+            "<span class='correct'>✔ சரி</span>";
+        score++;
+    } else {
+        document.getElementById("result").innerHTML =
+            "<span class='wrong'>✘ தவறு</span><br>சரி பதில்: " + correctAns;
+    }
+
+    setTimeout(nextQuestion, 1500);
+}
+
+function nextQuestion() {
+    current++;
+
+    if (current < questions.length) {
+        loadQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    document.querySelector(".container").innerHTML = `
+        <h2>🎉 முடிவுகள்</h2>
+        <h3>மொத்த மதிப்பெண்</h3>
+        <h1>${score} / ${questions.length}</h1>
+        <button onclick="location.reload()">மீண்டும் தொடங்கு</button>
+    `;
+}
+</script>
+
+</body>
+</html>

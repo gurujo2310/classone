@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>விடுபட்ட எழுத்து - வகுப்பு 1</title>
+<style>
+body {
+  font-family: 'Noto Sans Tamil', sans-serif;
+  background: #fff7e6;
+  text-align: center;
+  padding: 20px;
+}
+
+h1 {
+  color: #d35400;
+  margin-bottom: 20px;
+}
+h3 { color: #3855f8;}
+
+.words-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  justify-items: center;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 22px;
+  margin: 5px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s;
+}
+.card:hover {
+  transform: scale(1.03);
+}
+.small-text {
+      font-size: 12px; /* அல்லது உங்கள் விருப்பமான அளவு */
+      color: gray;
+}
+.word-label {
+  font-size: 26px;
+  margin-bottom: 10px;
+}
+
+select {
+  font-size: 22px;
+  border: none;              /* பார்டர் நீக்கம் */
+  
+  background: transparent;   /* பின்னணி நிறம் நீக்கம் */
+  outline: none;             /* focus outline நீக்கம் */
+  padding: 2px 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+select:focus {
+  border-bottom: 2px solid #d35400; /* தேர்ந்தெடுக்கும் போது நிறம் மாறும் */
+}
+
+select.correct {
+  border-bottom: 2px solid #2e7d32;
+  background-color: transparent;
+  color: #2e7d32;
+}
+
+select.wrong {
+  
+  background-color: transparent;
+  color: #f73a0b;
+}
+
+
+.correct-answer {
+  margin-top: 8px;
+  font-size: 18px;
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.wrong-answer {
+  margin-top: 8px;
+  font-size: 18px;
+  color: #c62828;
+  font-weight: bold;
+}
+
+button {
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 15px;
+  margin-right: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#score {
+  font-size: 22px;
+  margin-top: 15px;
+  font-weight: bold;
+  color: #2e7d32;
+}
+</style>
+</head>
+<body>
+
+<h1>விடுபட்ட எழுத்தை தேர்ந்தெடு ✍️</h1>
+<h3> மொத்தம் 30 கேள்விகள் </h3> 
+
+<div id="word-container" class="words-grid"></div>
+
+<button id="check-btn">சரி பார்க்க</button>
+<button id="retry-btn">மீண்டும் முயற்சி</button>
+<button id="back-btn">⬅️ Back</button>
+
+<div id="score"></div>
+
+<script>
+const words = [
+  {word:"மரம்", missing:"ர", options:["ல்","ர","ற"]},
+  {word:"கோல்", missing:"கோ", options:["கொ","கோ","கே"]},
+  {word:"பூக்கள்", missing:"க்", options:["ட்","க்","வ"]},
+  {word:"நரி", missing:"ரி", options:["றி","ரி","னி"]},
+  {word:"அம்மா", missing:"ம்", options:["த்","ம்","ந்"]},
+  {word:"மான்", missing:"ன்", options:["ந்","ண்","ன்"]},
+  {word:"பால்", missing:"ல்", options:["ள்","ல்","ழ்"]},
+  {word:"மாலை", missing:"லை", options:["ழை","ளை","லை"]},
+  {word:"நீர்", missing:"ர்", options:["ட்","ர்","ற்"]},
+  {word:"தலை <span class='small-text'>(உடல் உறுப்பு)</span>", missing:"லை", options:["ழை","லை","ளை"]},
+  {word:"பனை", missing:"னை", options:["நை","ணை","னை"]},
+  {word:"வான்", missing:"ன்", options:["ந்","ண்","ன்"]},
+  {word:"மணி", missing:"ணி", options:["னி","ணி","நி"]},
+  {word:"கடை", missing:"டை", options:["","டை","த"]},
+  {word:"நூல்", missing:"நூ", options:["னூ","நூ","ணூ"]},
+  {word:"போர்", missing:"போ", options:["பே","போ","பொ"]},
+  {word:"கோப்பு", missing:"ப்", options:["ப","ட்","ப்"]},
+  {word:"பல்", missing:"ல்", options:["ழ்","ல்","ள்"]},
+  {word:"நடை", missing:"டை", options:["தை","டை","நை"]},
+  {word:"முகம்", missing:"க", options:["ங","க","ப"]},
+  {word:"மீன்", missing:"ன்", options:["ந்","ண்","ன்"]},
+  {word:"காடு", missing:"டு", options:["டூ","க","டு"]},
+  {word:"மணல்", missing:"ண", options:["ன","ண","ந"]},
+  {word:"பறவை", missing:"ற", options:["ரை","ற","ர"]},
+  {word:"அறை<span class='small-text'>(குடியிருப்பு)</span>", missing:"றை", options:["றை","நை","ரை"]},
+  {word:"வெள்ளி", missing:"ள்ளி", options:["ல்லி","ள்ளி","ழ்ழி"]},
+  {word:"சூரியன்", missing:"ரி", options:["றி","ரி","ரீ"]},
+  {word:"நிலா", missing:"லா", options:["ழா","லா","ளா"]},
+  {word:"மண்", missing:"ண்", options:["ந்","ண்","ன்"]},
+  {word:"பூனை", missing:"னை", options:["நை","ணை","னை"]}
+];
+
+const wordContainer = document.getElementById('word-container');
+
+function createQuiz() {
+  wordContainer.innerHTML = '';
+  words.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    // Create select box
+    const select = document.createElement('select');
+    const defaultOption = document.createElement('option');
+    defaultOption.value = "";
+    defaultOption.textContent = "___";
+    select.appendChild(defaultOption);
+
+    item.options.forEach(opt => {
+      const option = document.createElement('option');
+      option.value = opt;
+      option.textContent = opt;
+      select.appendChild(option);
+    });
+
+    // Build word with dropdown in place of missing part (HTML ஆதரவு)
+    const parts = item.word.split(item.missing);
+    const label = document.createElement('div');
+    label.className = 'word-label';
+    label.innerHTML = parts[0] + select.outerHTML + (parts[1] || "");
+
+    const answerDiv = document.createElement('div');
+    answerDiv.className = 'answer-space';
+
+    card.appendChild(label);
+    card.appendChild(answerDiv);
+    wordContainer.appendChild(card);
+  });
+
+  // Reattach select elements (மீண்டும் நிகழ்வுகளை இணைக்க)
+  document.querySelectorAll('.card select').forEach((select, i) => {
+    select.addEventListener('change', () => {
+      select.classList.remove('correct','wrong');
+    });
+  });
+
+  document.getElementById('score').textContent = '';
+}
+
+
+document.getElementById('check-btn').addEventListener('click', () => {
+  const selects = document.querySelectorAll('.card select');
+  let score = 0;
+  selects.forEach((select, i) => {
+    const answerDiv = select.parentElement.nextElementSibling;
+    answerDiv.textContent = "";
+    select.classList.remove('correct','wrong');
+    // 🔒 select disable logic
+    select.disabled = true;
+
+    if (select.value === words[i].missing) {
+  select.classList.add('correct');
+  answerDiv.innerHTML = "✅ சரியான விடை: " + words[i].word; // ← textContent → innerHTML
+  answerDiv.className = 'correct-answer';
+  score++;
+} else {
+  select.classList.add('wrong');
+  answerDiv.innerHTML = "❌ சரியான விடை: " + words[i].word; // ← textContent → innerHTML
+  answerDiv.className = 'wrong-answer';
+}
+
+  });
+  document.getElementById('score').textContent = `மொத்த மதிப்பெண்: ${score} / ${words.length}`;
+});
+
+document.getElementById('retry-btn').addEventListener('click', () => {
+  createQuiz();
+});
+
+document.getElementById('back-btn').addEventListener('click', () => {
+  window.location.href = "class1.html";
+});
+
+
+createQuiz();
+</script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ர,ற, ந,ண,ன, ல,ள,ழ பயிற்சி- வகுப்பு 1</title>
+<style>
+body {
+  font-family: 'Noto Sans Tamil', sans-serif;
+  background: #d7f5c7;
+  text-align: center;
+  padding: 20px;
+}
+
+h1 {
+  color: #d35400;
+  margin-bottom: 20px;
+}
+h3 { color: #3855f8;}
+
+.words-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  justify-items: center;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 22px;
+  margin: 5px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s;
+}
+.card:hover {
+  transform: scale(1.03);
+}
+.small-text {
+      font-size: 12px; /* அல்லது உங்கள் விருப்பமான அளவு */
+      color: gray;
+}
+.word-label {
+  font-size: 26px;
+  margin-bottom: 10px;
+}
+
+select {
+  font-size: 22px;
+  border: none;              /* பார்டர் நீக்கம் */
+  
+  background: transparent;   /* பின்னணி நிறம் நீக்கம் */
+  outline: none;             /* focus outline நீக்கம் */
+  padding: 2px 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+select:focus {
+  border-bottom: 2px solid #d35400; /* தேர்ந்தெடுக்கும் போது நிறம் மாறும் */
+}
+
+select.correct {
+  border-bottom: 2px solid #2e7d32;
+  background-color: transparent;
+  color: #2e7d32;
+}
+
+select.wrong {
+  
+  background-color: transparent;
+  color: #f73a0b;
+}
+
+
+.correct-answer {
+  margin-top: 8px;
+  font-size: 18px;
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.wrong-answer {
+  margin-top: 8px;
+  font-size: 18px;
+  color: #c62828;
+  font-weight: bold;
+}
+
+button {
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 15px;
+  margin-right: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#score {
+  font-size: 22px;
+  margin-top: 15px;
+  font-weight: bold;
+  color: #2e7d32;
+}
+</style>
+</head>
+<body>
+
+<h1>ர,ற, ந,ண,ன, ல,ள,ழ எழுத்துப் பயிற்சி ✍️</h1>
+<h3> மொத்தம் 30 கேள்விகள் </h3> 
+
+<div id="word-container" class="words-grid"></div>
+
+<button id="prev-btn">⬅️ Previous</button>
+<button id="next-btn">Next ➡️</button>
+<button id="check-btn" style="display:none;">சரி பார்க்க</button>
+<button id="retry-btn">மீண்டும் முயற்சி</button>
+<button id="back-btn">⬅️ Back</button>
+
+<div id="score"></div>
+
+<script>
+ 
+
+const words = [
+  {word:"மரம்", missing:"ர", options:["ர","ற"]},
+  {word:"கோழை", missing:"ழை", options:["ழை","ளை","லை"]},
+  {word:"பூக்கள்", missing:"ள்", options:["ல்","ள்","ழ்"]},
+  {word:"நரி", missing:"ரி", options:["றி","ரி",]},
+  {word:"அன்னை", missing:"னை", options:["நை","ணை","னை"]},
+  {word:"மான்", missing:"ன்", options:["ந்","ண்","ன்"]},
+  {word:"பால்", missing:"ல்", options:["ள்","ல்","ழ்"]},
+  {word:"மாலை", missing:"லை", options:["ழை","ளை","லை"]},
+  {word:"நீர்", missing:"ர்", options:["ர்","ற்"]},
+  {word:"தலை <span class='small-text'>(உடல் உறுப்பு)</span>", missing:"லை", options:["ழை","லை","ளை"]},
+  {word:"பனை", missing:"னை", options:["நை","ணை","னை"]},
+  {word:"வான்", missing:"ன்", options:["ந்","ண்","ன்"]},
+  {word:"மணி", missing:"ணி", options:["னி","ணி","நி"]},
+  {word:"கறை", missing:"றை", options:["ரை","றை"]},
+  {word:"நூல்", missing:"ல்", options:["ல்","ள்","ழ்"]},
+  {word:"போர்", missing:"ர்", options:["ற்","ர்"]},
+  {word:"கோழி", missing:"ழி", options:["ளி","லி","ழி"]},
+  {word:"பல்", missing:"ல்", options:["ழ்","ல்","ள்"]},
+  {word:"நடை", missing:"ந", options:["ன","ண","ந"]},
+  {word:"மூன்று", missing:"ன்", options:["ந்","ண்","ன்"]},
+  {word:"மீன்", missing:"ன்", options:["ந்","ண்","ன்"]},
+  {word:"காளை", missing:"ளை", options:["லை","ளை","ழை"]},
+  {word:"மணல்", missing:"ண", options:["ன","ண","ந"]},
+  {word:"பறவை<span class='small-text'>(உயிரினம்)</span>", missing:"ற", options:["ற","ர"]},
+  {word:"அறை<span class='small-text'>(குடியிருப்பு)</span>", missing:"றை", options:["றை","ரை"]},
+  {word:"வெள்ளி", missing:"ள்ளி", options:["ல்லி","ள்ளி","ழ்ழி"]},
+  {word:"சூரியன்", missing:"ரி", options:["றி","ரி","ரீ"]},
+  {word:"நிலா", missing:"லா", options:["ழா","லா","ளா"]},
+  {word:"மண்", missing:"ண்", options:["ந்","ண்","ன்"]},
+  {word:"பூனை", missing:"னை", options:["நை","ணை","னை"]},
+
+  {word:"சூரியன்", missing:"ரி", options:["றி","ரி","ரீ"]},
+  {word:"நிலா", missing:"லா", options:["ழா","லா","ளா"]},
+  {word:"மண்", missing:"ண்", options:["ந்","ண்","ன்"]},
+  {word:"பூனை", missing:"னை", options:["நை","ணை","னை"]},
+   {word:"சூரியன்", missing:"ரி", options:["றி","ரி","ரீ"]},
+  {word:"நிலா", missing:"லா", options:["ழா","லா","ளா"]},
+  {word:"மண்", missing:"ண்", options:["ந்","ண்","ன்"]},
+  {word:"பூனை", missing:"னை", options:["நை","ணை","னை"]},
+   {word:"சூரியன்", missing:"ரி", options:["றி","ரி","ரீ"]},
+  {word:"நிலா", missing:"லா", options:["ழா","லா","ளா"]},
+  {word:"மண்", missing:"ண்", options:["ந்","ண்","ன்"]},
+  {word:"பூனை", missing:"னை", options:["நை","ணை","னை"]},
+   {word:"சூரியன்", missing:"ரி", options:["றி","ரி","ரீ"]},
+  {word:"நிலா", missing:"லா", options:["ழா","லா","ளா"]},
+  {word:"மண்", missing:"ண்", options:["ந்","ண்","ன்"]},
+  {word:"பூனை", missing:"னை", options:["நை","ணை","னை"]}
+];
+
+
+const questionsPerPage = 30;
+let currentPage = 0;
+
+// மாணவர் பதில்களை சேமிக்க
+let userAnswers = new Array(words.length).fill("");
+
+const wordContainer = document.getElementById('word-container');
+
+function createQuiz() {
+  wordContainer.innerHTML = '';
+
+  const start = currentPage * questionsPerPage;
+  const end = start + questionsPerPage;
+  const pageWords = words.slice(start, end);
+
+  pageWords.forEach((item, index) => {
+    const globalIndex = start + index;
+
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const select = document.createElement('select');
+    const defaultOption = document.createElement('option');
+    defaultOption.value = "";
+    defaultOption.textContent = "___";
+    select.appendChild(defaultOption);
+
+    item.options.forEach(opt => {
+      const option = document.createElement('option');
+      option.value = opt;
+      option.textContent = opt;
+      select.appendChild(option);
+    });
+
+    // restore previous answer
+    if (userAnswers[globalIndex]) {
+      select.value = userAnswers[globalIndex];
+    }
+
+    select.addEventListener('change', () => {
+      userAnswers[globalIndex] = select.value;
+    });
+
+    const parts = item.word.split(item.missing);
+    const label = document.createElement('div');
+    label.className = 'word-label';
+    label.innerHTML = parts[0] + select.outerHTML + (parts[1] || "");
+
+    const answerDiv = document.createElement('div');
+    answerDiv.className = 'answer-space';
+
+    card.appendChild(label);
+    card.appendChild(answerDiv);
+    wordContainer.appendChild(card);
+  });
+
+  // select elements மீண்டும் attach
+  document.querySelectorAll('.card select').forEach((select, i) => {
+    const globalIndex = start + i;
+    select.value = userAnswers[globalIndex] || "";
+    select.onchange = () => {
+      userAnswers[globalIndex] = select.value;
+    };
+  });
+
+  updateButtons();
+  document.getElementById('score').textContent = '';
+}
+
+function updateButtons(){
+  document.getElementById('prev-btn').style.display =
+    currentPage > 0 ? "inline-block" : "none";
+
+  document.getElementById('next-btn').style.display =
+    (currentPage + 1) * questionsPerPage < words.length
+      ? "inline-block"
+      : "none";
+
+  document.getElementById('check-btn').style.display =
+    (currentPage + 1) * questionsPerPage >= words.length
+      ? "inline-block"
+      : "none";
+}
+
+// NEXT
+document.getElementById('next-btn').addEventListener('click', () => {
+  if ((currentPage + 1) * questionsPerPage < words.length) {
+    currentPage++;
+    createQuiz();
+  }
+});
+
+// PREVIOUS
+document.getElementById('prev-btn').addEventListener('click', () => {
+  if (currentPage > 0) {
+    currentPage--;
+    createQuiz();
+  }
+});
+
+// FINAL CHECK – எல்லா கேள்விகளும்
+document.getElementById('check-btn').addEventListener('click', () => {
+  let score = 0;
+
+  document.querySelectorAll('.card select').forEach((select, i) => {
+    const globalIndex = currentPage * questionsPerPage + i;
+    const correctAnswer = words[globalIndex].missing;
+
+    // reset classes
+    select.classList.remove('correct', 'wrong');
+
+    if (select.value === correctAnswer) {
+      select.classList.add('correct');
+      score++;
+    } else {
+      select.classList.add('wrong');
+    }
+  });
+
+  document.getElementById('score').innerHTML =
+    `🎯 <b>மொத்த மதிப்பெண் :</b> ${score} / ${words.length}`;
+});
+
+
+// RETRY
+document.getElementById('retry-btn').addEventListener('click', () => {
+  userAnswers.fill("");
+  currentPage = 0;
+  createQuiz();
+});
+
+// BACK
+document.getElementById('back-btn').addEventListener('click', () => {
+  window.location.href = "class1.html";
+});
+
+// INIT
+createQuiz();
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="utf-8" />
+<title>சொற்றொடர் (4 சொற்கள்) — 50 கேள்விகள்</title>
+<style>
+  body { font-family: "Noto Sans Tamil", sans-serif; background:#f4f6f9; margin:0; padding:20px; text-align:center; }
+  .container { max-width:900px; margin:auto; background:white; padding:18px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.06); }
+  h1{ margin:0 0 8px 0; font-size:22px;}
+  .meta{ color:#666; margin-bottom:12px;}
+  .qbox{ text-align:left; border:1px solid #eee; padding:12px; border-radius:10px; margin-bottom:10px; background:#fafafa;}
+  .qnum { font-weight:bold; color:#1976d2; margin-bottom:6px; }
+  .shuffledWords{ font-size:16px; margin-bottom:8px; color:#222; }
+  input { width:100%; padding:8px; font-size:16px; border-radius:8px; border:1px solid #cfd6e3; box-sizing:border-box; }
+  input.correct { border-color:#2e7d32; background:#e8f5e9; }
+  input.wrong { border-color:#b00020; background:#ffebee; }
+  .answerLine{ margin-top:5px; font-size:14px; color:#00796b; display:none; }
+  .answerLine.show { display:block; }
+  .controls{ margin-top:14px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+  button{ padding:10px 18px; font-size:15px; border:none; border-radius:8px; cursor:pointer; color:white; }
+  .btn-grey{ background:#666; } .btn-blue{ background:#1976d2; } .btn-green{ background:#00796b; } .btn-red{ background:#d32f2f; }
+  .pager{ margin-top:14px; }
+  
+  .pageBtns{ 
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;   /* அதிக buttons இருந்தால் next line */
+}
+
+.pageBtns button{
+  margin:0 4px;
+  border-radius:50%;
+  width:36px;
+  height:36px;
+  font-weight:bold;
+  background:#ccc;
+  color:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.pageBtns button.active{
+  background:#1976d2;
+  color:white;
+}
+
+  #scoreBox{ display:none; margin-top:12px; padding:10px; border-radius:8px; background:#eef7f3; border:1px solid #d6efe7; }
+  .note{ color:#555; font-size:13px; margin-top:8px;}
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>சொற்றொடர் அமைக்கவும்</h1>
+    <div class="meta">ஒரு பக்கத்தில் 10 கேள்விகள் — மொத்தம் 5 பக்கங்கள்</div>
+
+    <div id="quiz"></div>
+
+    <div class="controls">
+      <button id="prevBtn" class="btn-grey">⬅️ முந்தையது</button>
+      <button id="nextBtn" class="btn-blue">➡️ அடுத்தது</button>
+      <button id="checkBtn" class="btn-green" style="display:none;">✅ சரிபார்</button>
+      <button id="homeBtn" class="btn-grey">🏠 முகப்பு</button>
+    </div>
+
+    <div class="pager">
+      <div class="pageBtns" id="pageBtns"></div>
+    </div>
+
+    <div id="scoreBox">
+      <div>🎯 மொத்த மதிப்பெண்: <strong id="score"></strong> / <strong id="total"></strong></div>
+      <div style="margin-top:8px;"><button id="retryBtn" class="btn-red">🔁 மீண்டும் முயற்சி செய்</button></div>
+    </div>
+  </div>
+
+<script>
+const QUESTIONS_PER_PAGE = 10;
+const sentences = [
+  "நான் பள்ளிக்கு சென்றேன்",
+  "அவன் பாடம் படித்தான் ",
+  "அவள் இன்று பூந்தோட்டம் சென்றாள் ",
+  "மாணவர்கள் ஆசிரியரை சந்தித்தார்கள் ",
+  "நாய் உணவு சாப்பிட்டது ",
+  "மரத்தில் கிளி பறந்தது ",
+  "பூ அழகாக மலர்ந்துள்ளது",
+  "இன்று மழை பெய்தது",
+  "சூரியன் காலையில் உதித்தது மாலையில் மறைகிறது",
+  "நதி ஊரில் அழகாக ஓடுகிறது ",
+  "அப்பா காலையில் வேலைக்கு சென்றார் ",
+  "அம்மா சந்தைக்கு சென்றார்",
+  "பையன் புத்தகம் படிக்கிறான்",
+  "மகள் பள்ளிக்கு சென்றாள்",
+  "அவர்கள் போட்டியில் வெற்றி பெற்றனர்",
+  "பறவைகள் வரியையாக வானில் பறக்கிறது",
+  "குழந்தை தூங்கிக் கொண்டிருக்கிறான்",
+  "நேற்று அண்ணன் வீட்டிற்கு திரும்பினான்",
+  "தாத்தா வரலாற்றுக் கதைச் சொன்னார்",
+  "நாய் வாலை ஆட்டிக்கொண்டு ஓடுகிறது",
+  "நான் நன்றாகத் தமிழ்ப் பேசுகிறேன்",
+  "அவள் திரைப்படம் பார்க்கிறாள்",
+  "தோழிகள் மகிழ்ச்சியாக பேசிக்கொண்டிருக்கிறார்கள்",
+  "குரங்கு மரத்தில் வேகமாக தாவிச் செல்கிறது",
+  "பசு புல்லைத் தின்னுகிறது",
+  "மழை பெய்ததால் குளிர் வாட்டுகிறது ",
+  "குழந்தை மகிழ்ச்சியாக சிரிக்கிறது",
+  "அவன் பந்தை எறிந்தான்",
+  "நாங்கள் நேற்று கடைத்தெருவுக்கு சென்றோம்",
+  "பூனை ஆற்று மீனை பிடித்தது",
+  "படகு கடலில் மிதக்கிறது",
+  "விவசாயி வயலில் உழைத்தான்",
+  "மீன்கள் நீரில் வேகமாக நீந்துகின்றன",
+  "நாய்கள் உணவு கொடுத்தவருக்கு என்றும் நன்றியுடன் இருக்கும்",
+  "அவள் நாவல் வாசிக்கிறாள்",
+  "மாலை நேரம் அமைதியாக உள்ளது",
+  "கடிகாரம் மணி ஒலிக்கிறது",
+  "காட்டாற்று வெள்ளம் ஆபத்தானது",
+  "நான் இன்றைய பணியை எளிதில் முடித்தேன்",
+  "அவன் சமையல் கலையில் வல்லவன்",
+  "அம்மா காய்கறி நறுக்கினார்",
+  "தாத்தா நல்ல புத்தகங்களை படிக்க கொடுத்தார்",
+  "அண்ணன் பள்ளிக்குச் சென்றுவிட்டு மாலையில் வீடு திரும்பினான்",
+  "அவள் நடனம் ஆடுகிறாள்",
+  "மாணவர்கள் கவனமாகப் பாடம் கேட்டனர்",
+  "பூமி சூரியனைச் சுற்றுகிறது",
+  "நான் நண்பனுடன் தேநீர் பருகினேன்",
+  "வாகன நெரிசலில் வீட்டுக்கு வர தாமதம் ஆகிவிட்டது",
+  "அவன் கதை எழுதுவதில் திறமையானவன்",
+  "சித்தப்பா பொது அறிவு சிந்தனை கொண்டவர்"
+];
+
+function shuffleArray(arr){
+  const r = arr.slice();
+  for(let i=r.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [r[i],r[j]]=[r[j],r[i]];
+  }
+  return r;
+}
+
+function shuffleWords(sentence){
+  const words = sentence.trim().split(/\s+/);
+  let shuffled = words.slice();
+  let attempts = 0;
+  do {
+    shuffled = shuffleArray(words);
+    attempts++;
+  } while(shuffled.join(" ")===sentence && attempts<20);
+  return shuffled.join(" ");
+}
+
+let questions = [];
+let answers = {};
+let results = {};
+let checked = false;
+let currentPage = 0;
+const TOTAL_PAGES = Math.ceil(sentences.length / QUESTIONS_PER_PAGE);
+
+function generateQuestions(){
+  const shuffledQ = shuffleArray(sentences);
+  questions = shuffledQ.map(s => ({ a:s, q:shuffleWords(s) }));
+}
+
+function renderPage(){
+  const quiz = document.getElementById("quiz");
+  quiz.innerHTML = "";
+  const start = currentPage * QUESTIONS_PER_PAGE;
+  const end = Math.min(start + QUESTIONS_PER_PAGE, questions.length);
+
+  for(let i=start;i<end;i++){
+    const q = questions[i];
+    const div = document.createElement("div");
+    div.className = "qbox";
+
+    const qnum = document.createElement("div");
+    qnum.className = "qnum";
+    qnum.textContent = `கேள்வி ${i+1}`;
+    div.appendChild(qnum);
+
+    const p = document.createElement("div");
+    p.className = "shuffledWords";
+    p.textContent = q.q;
+    div.appendChild(p);
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "சொற்றொடரை சரியான வரிசையில் எழுதவும்";
+    input.value = answers[i] || "";
+    input.addEventListener("input",()=>answers[i]=input.value);
+
+    const ansLine = document.createElement("div");
+    ansLine.className = "answerLine";
+    ansLine.textContent = "✅ சரியான சொற்றொடர்: " + q.a;
+
+    if(checked){
+      input.disabled = true;
+      ansLine.classList.add("show");
+      if(results[i]==="correct") input.classList.add("correct");
+      else input.classList.add("wrong");
+    }
+
+    div.appendChild(input);
+    div.appendChild(ansLine);
+    quiz.appendChild(div);
+  }
+
+  document.getElementById("checkBtn").style.display = (currentPage===TOTAL_PAGES-1)?'inline-block':'none';
+  updatePageButtons();
+}
+
+function checkAll(){
+  checked=true;
+  results={};
+  let score=0;
+  let unanswered=0;
+  for(let i=0;i<questions.length;i++){
+    const ans=(answers[i]||"").trim();
+    const correct=questions[i].a.trim();
+    if(ans===""){ unanswered++; results[i]="unanswered"; }
+    else if(ans===correct){ results[i]="correct"; score++; }
+    else results[i]="wrong";
+  }
+  document.getElementById("scoreBox").style.display="block";
+  document.getElementById("score").textContent=score;
+  document.getElementById("total").textContent=questions.length;
+  
+  // புதிதாக சேர்க்கப்பட்டது ↓
+  let ua = document.getElementById("unansweredCount");
+  if(!ua){
+    ua = document.createElement("div");
+    ua.id = "unansweredCount";
+    ua.style.marginTop="6px";
+    ua.style.color="#d32f2f";
+    document.getElementById("scoreBox").appendChild(ua);
+  }
+  ua.textContent = `விடையளிக்காத கேள்விகள்: ${unanswered}`;
+  
+  renderPage();
+}
+
+function nextPage(){ if(currentPage<TOTAL_PAGES-1){currentPage++; renderPage();} }
+function prevPage(){ if(currentPage>0){currentPage--; renderPage();} }
+
+function goToPage(p){ currentPage=p; renderPage(); }
+
+function updatePageButtons(){
+  const box=document.getElementById("pageBtns");
+  box.innerHTML="";
+  for(let i=0;i<TOTAL_PAGES;i++){
+    const b=document.createElement("button");
+    b.textContent=i+1;
+    if(i===currentPage) b.classList.add("active");
+    b.onclick=()=>goToPage(i);
+    box.appendChild(b);
+  }
+}
+
+function retryAll(){
+  checked=false;
+  answers={};
+  results={};
+  document.getElementById("scoreBox").style.display="none";
+  const ua=document.getElementById("unansweredCount");
+  if(ua) ua.remove();
+  generateQuestions();
+  currentPage=0;
+  renderPage();
+}
+
+document.getElementById("nextBtn").onclick=nextPage;
+document.getElementById("prevBtn").onclick=prevPage;
+document.getElementById("checkBtn").onclick=checkAll;
+document.getElementById("retryBtn").onclick=retryAll;
+document.getElementById("homeBtn").onclick=()=>alert("ஹோம் பக்கம்");
+
+generateQuestions();
+renderPage();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>அ எழுத்து Dot Maker</title>
+<style>
+body {
+  background: #fffaf2;
+  text-align: center;
+  font-family: 'Noto Sans Tamil';
+}
+canvas {
+  border: 2px solid #333;
+  background: #ffffff;
+  display: block;
+  margin: 10px auto;
+  cursor: crosshair;
+}
+#output {
+  width: 90%;
+  margin: 15px auto;
+  background: #f4f4f4;
+  padding: 10px;
+  border-radius: 10px;
+  font-family: monospace;
+  text-align: left;
+  white-space: pre-wrap;
+}
+</style>
+</head>
+<body>
+
+<h2>🪶 "அ" எழுத்து - Dot Maker கருவி</h2>
+<p>பின்புலத்தில் “அ” எழுத்து faint-ஆ காட்டப்படும். அதின் மீது புள்ளி வைக்கவும்.</p>
+
+<div style="position:relative; display:inline-block;">
+  <img src=https://i.postimg.cc/vHGPFShT/h.jpg
+       style="position:absolute; left:50%; top:55%; transform:translate(-50%, -50%);
+              opacity:0.25; width:300px; pointer-events:none;">  <!-- 🔹 FIX -->
+  <canvas id="dotMaker" width="500" height="400"></canvas>
+</div>
+
+<pre id="output"></pre>
+
+<button onclick="clearCanvas()">அழி</button>
+
+<script>
+const canvas = document.getElementById("dotMaker");
+const ctx = canvas.getContext("2d");
+let dots = [];
+
+canvas.addEventListener("click", e => {
+  const rect = canvas.getBoundingClientRect();
+  const x = Math.round(e.clientX - rect.left);
+  const y = Math.round(e.clientY - rect.top);
+  dots.push({x, y});
+  ctx.beginPath();
+  ctx.arc(x, y, 4, 0, Math.PI * 2);
+  ctx.fillStyle = "black";
+  ctx.fill();
+  document.getElementById("output").innerText =
+    JSON.stringify(dots, null, 2);
+});
+
+function clearCanvas(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  dots = [];
+  document.getElementById("output").innerText = "";
+}
+</script>
+
+</body>
+</html>

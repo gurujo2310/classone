@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🧩 குழம்பிய சொல்லைக் கண்டுபிடி</title>
+<style>
+:root{
+  --bg:#fff8e1; --card:#ffffff; --accent:#5b0dec;
+  --ok:#00a650; --bad:#e53935;
+}
+body{
+  margin:0; padding:20px;
+  font-family:"Noto Sans Tamil","Baloo Thambi 2",sans-serif;
+  background:var(--bg); text-align:center;
+}
+h1{
+  display:inline-block; padding:10px 18px; border-radius:10px;
+  background:#fff3e0; border:3px solid #ff9800;
+  font-size:22px; margin-bottom:18px;
+}
+.header-box{
+  display:flex; justify-content:space-between;
+  align-items:center; background:#e3f2fd;
+  border:2px solid #90caf9; border-radius:10px;
+  padding:10px 20px; font-weight:bold;
+  font-size:18px; color:#0d47a1; margin-bottom:15px;
+}
+.quiz{max-width:900px;margin:auto;text-align:left;}
+.qcard{
+  position:relative; background:var(--card);
+  border-radius:12px; padding:20px 20px 15px 90px;
+  margin:20px 0; box-shadow:0 2px 6px rgba(0,0,0,0.06);
+  border:2px solid #eee;
+}
+.qnumber{
+  position:absolute; top:25px; left:25px;
+  width:40px;height:40px;
+  background:linear-gradient(135deg,#FF7043,#E64A19);
+  color:#fff;font-weight:bold;font-size:18px;
+  border-radius:50%;display:flex;align-items:center;
+  justify-content:center;box-shadow:0 4px 6px rgba(0,0,0,0.25);
+}
+.scrambled-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;}
+.scr-letter{
+  min-width:44px;height:44px;line-height:44px;text-align:center;
+  border:2px solid #f44336;border-radius:8px;
+  font-weight:700;font-size:20px;color:#d32f2f;
+  background:#fff0f0;padding:0 6px;box-sizing:border-box;
+}
+.answer-input{
+  width:250px;height:46px;font-size:20px;padding:6px 10px;
+  text-align:left;border:2px solid #bdbdbd;border-radius:10px;
+  transition:all .15s ease;box-sizing:border-box;
+}
+.answer-input.ok{border-color:var(--ok);background:#eaffef;}
+.answer-input.bad{border-color:var(--bad);background:#fff0f0;}
+.controls{display:flex;gap:12px;justify-content:center;margin:20px 0;flex-wrap:wrap;}
+button{padding:10px 18px;border:none;border-radius:8px;cursor:pointer;color:#fff;font-size:16px;background:var(--accent);}
+button.warn{background:#f39c12;}
+button.home{background:#1976d2;}
+button.next{background:#17a2b8;}
+button.retry{background:#c2185b;}
+.pagination{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:15px 0;}
+.page-btn{padding:6px 12px;border:1px solid #ccc;border-radius:6px;cursor:pointer;background:#fff;color:#333;}
+.page-btn.active{background:var(--accent);color:#fff;font-weight:700;}
+#info{margin-top:10px;font-weight:700;color:#114b5f;text-align:center;}
+</style>
+</head>
+<body>
+<h1>🧩 குழம்பிய சொல்லைக் கண்டுபிடி</h1>
+
+<div id="quiz" class="quiz"></div>
+<div id="pagination" class="pagination"></div>
+
+<div class="controls">
+  <button id="prevBtn" class="warn">⬅️ பின்செல்</button>
+  <button id="homeBtn" class="home">🏠 முகப்பு</button>
+  <button id="nextBtn" class="next">➡️ அடுத்து</button>
+  <button id="retryBtn" class="retry">🔁 மீண்டும் முயற்சி செய்</button>
+  <button id="checkBtn" style="display:none;">✅ சரிபார்</button>
+</div>
+
+<div id="info"></div>
+
+<script>
+/* --- உங்கள் script இங்கே தொடங்குகிறது --- */
+const QUESTIONS=[
+  {answer:"மாம்பழம்",scrambled:"ழ ம் மா ப ம்"},
+  {answer:"பூனை",scrambled:"னை பூ"},
+  {answer:"நாய்",scrambled:"ய் நா"},
+  {answer:"மீன்",scrambled:"ன் மீ"},
+  {answer:"புத்தகம்",scrambled:"த் த பு க ம்"},
+  {answer:"கடல்",scrambled:"ட ல் க"},
+  {answer:"அம்மா",scrambled:"ம் மா அ"},
+  {answer:"பெண்",scrambled:"ண் பெ"},
+  {answer:"மரம்",scrambled:"ம் ம ர"},
+  {answer:"வீடு",scrambled:"டு வீ"},
+  {answer:"தண்ணீர்",scrambled:"ர் த ண் ணீ"},
+  {answer:"கோழி",scrambled:"ழி கோ"},
+  {answer:"ஆடு",scrambled:"டு ஆ"},
+  {answer:"மலை",scrambled:"லை ம"},
+  {answer:"மழை",scrambled:"ழை ம"},
+  {answer:"பயணம்",scrambled:"ய ப ண ம்"},
+  {answer:"பாலம்",scrambled:"ம் ல பா"},
+  {answer:"பறவை",scrambled:"ற ப வை"},
+  {answer:"மணி",scrambled:"ணி ம"},
+  {answer:"அத்தை",scrambled:"தை த் அ"},
+  {answer:"பால்",scrambled:"ல் பா"},
+  {answer:"கனி",scrambled:"னி க"},
+  {answer:"வானம்",scrambled:"ன ம் வா"},
+  {answer:"தேன்",scrambled:"ன் தே"},
+  {answer:"நகர்",scrambled:"க ர் ந"},
+  {answer:"நண்டு",scrambled:"ந டு ண்"},
+  {answer:"மணல்",scrambled:"ண ல் ம"},
+  {answer:"மலர்",scrambled:"ம ர் ல"},
+  {answer:"அலை",scrambled:"லை அ"},
+  {answer:"கோவில்",scrambled:"வி ல் கோ"},
+  {answer:"ஆசிரியர்",scrambled:"ஆ ரி சி ர் ய"},
+  {answer:"மீனவர்",scrambled:"மீ ர் வ ன"},
+  {answer:"பச்சை",scrambled:"ப சை ச்"},
+  {answer:"பாம்பு",scrambled:"பா பு ம்"},
+  {answer:"விழா",scrambled:"ழா வி"},
+  {answer:"நீலம்",scrambled:"நீ ம் ல"},
+  {answer:"சூரியன்",scrambled:"சூ ன் ரி ய"},
+  {answer:"கோவை",scrambled:"வை கோ"},
+  {answer:"பயன்",scrambled:"ய ப ன்"},
+  {answer:"மும்பை",scrambled:"மு பை ம்"},
+  {answer:"தர்பூசணி",scrambled:"த பூ ர் ணி ச"},
+  {answer:"கோழி",scrambled:"ழி கோ"},
+  {answer:"சிங்கம்",scrambled:"சி ம் ங் க"},
+  {answer:"முட்டை",scrambled:"மு டை ட்"},
+  {answer:"மருத்துவர்",scrambled:"ம ர் ரு து த் வ"},
+  {answer:"குமரன்",scrambled:"ம ர கு ன்"},
+  {answer:"எலும்பு",scrambled:"எ பு லு ம்"},
+  {answer:"நகரம்",scrambled:"ந ர ம் க"},
+  {answer:"அரசன்",scrambled:"அ ன் ச ர"},
+  {answer:"விலங்கு",scrambled:"வி கு ங் ல"},
+];
+
+const PER_PAGE=10;
+let currentPage=1;
+const totalPages=Math.ceil(QUESTIONS.length/PER_PAGE);
+let answers=Array(QUESTIONS.length).fill("");
+let status=Array(QUESTIONS.length).fill(null);
+
+const quizDiv=document.getElementById("quiz");
+const pagination=document.getElementById("pagination");
+const infoDiv=document.getElementById("info");
+const prevBtn=document.getElementById("prevBtn");
+const nextBtn=document.getElementById("nextBtn");
+const homeBtn=document.getElementById("homeBtn");
+const retryBtn=document.getElementById("retryBtn");
+const checkBtn=document.getElementById("checkBtn");
+
+function renderPagination(){
+  pagination.innerHTML="";
+  for(let p=1;p<=totalPages;p++){
+    const btn=document.createElement("div");
+    btn.className="page-btn"+(p===currentPage?" active":"");
+    btn.textContent=p;
+    btn.onclick=()=>{currentPage=p;renderPage(p);window.scrollTo({top:0});};
+    pagination.appendChild(btn);
+  }
+}
+
+function renderPage(page){
+  quizDiv.innerHTML="";
+  const headerBox=document.createElement("div");
+  headerBox.className="header-box";
+  headerBox.innerHTML=`<div>📝 கேள்விகள்</div><div>✏️ பதில்கள்</div>`;
+  quizDiv.appendChild(headerBox);
+
+  const start=(page-1)*PER_PAGE;
+  const end=Math.min(start+PER_PAGE,QUESTIONS.length);
+
+  for(let i=start;i<end;i++){
+    const q=QUESTIONS[i];
+    const card=document.createElement("div");
+    card.className="qcard";
+    const title=document.createElement("div");
+    title.className="qnumber";
+    title.textContent=i+1;
+    card.appendChild(title);
+    const row=document.createElement("div");
+    row.className="scrambled-row";
+    const letters=document.createElement("div");
+    letters.style.display="flex";letters.style.gap="6px";
+    q.scrambled.split(" ").forEach(ch=>{
+      const box=document.createElement("div");
+      box.className="scr-letter";box.textContent=ch;
+      letters.appendChild(box);
+    });
+    row.appendChild(letters);
+    const input=document.createElement("input");
+    input.type="text";input.className="answer-input";
+    input.value=answers[i];
+    input.addEventListener("input",()=>answers[i]=input.value);
+    if(status[i]==="ok")input.classList.add("ok");
+    else if(status[i]==="bad")input.classList.add("bad");
+    row.appendChild(input);
+    card.appendChild(row);
+    quizDiv.appendChild(card);
+  }
+
+  renderPagination();
+  prevBtn.style.display=page>1?"inline-block":"none";
+  nextBtn.style.display=page<totalPages?"inline-block":"none";
+  checkBtn.style.display=page===totalPages?"inline-block":"none";
+  infoDiv.textContent=`பக்கம் ${page} / ${totalPages}`;
+}
+
+function checkAllPages(){
+  let correct=0,wrong=0,empty=0;
+  QUESTIONS.forEach((q,i)=>{
+    const ans=(answers[i]||"").trim();
+    if(ans===""){status[i]="empty";empty++;}
+    else if(ans===q.answer.trim()){status[i]="ok";correct++;}
+    else{status[i]="bad";wrong++;}
+  });
+  renderPage(currentPage);
+  infoDiv.innerHTML=`
+  🎯 மொத்த கேள்விகள்: ${QUESTIONS.length}<br>
+  ✅ சரியானவை: ${correct}<br>
+  ❌ தவறானவை: ${wrong}<br>
+  ⚠️ விடையளிக்காதவை: ${empty}<br>
+  💯 மதிப்பெண்: ${correct} / ${QUESTIONS.length}`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+retryBtn.onclick=()=>{answers.fill("");status.fill(null);currentPage=1;renderPage(1);infoDiv.textContent="🔁 மீண்டும் தொடங்கப்பட்டது!";};
+nextBtn.onclick=()=>{if(currentPage<totalPages){currentPage++;renderPage(currentPage);window.scrollTo({top:0});}};
+prevBtn.onclick=()=>{if(currentPage>1){currentPage--;renderPage(currentPage);window.scrollTo({top:0});}};
+homeBtn.onclick = () => {
+  window.location.href = "class1.html"; // முகப்பு பக்கம்
+};
+checkBtn.onclick = checkAllPages;
+renderPage(currentPage);
+
+
+
+</script>
+</body>
+</html>

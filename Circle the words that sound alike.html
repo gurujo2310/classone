@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <title>ஒத்த / ஒரே ஓசை - வட்டமிடு (அரை மதிப்பெண் logic)</title>
+  <style>
+    body {
+      font-family: "Baloo Thambi 2", Arial, sans-serif;
+      background-color: #f8f6ff;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+    }
+
+    h1 {
+      border: 3px solid #9933ff;
+      border-radius: 10px;
+      padding: 12px 20px;
+      background-color: #e6ccff;
+      display: inline-block;
+      color: #333;
+      font-size: 28px;
+      margin-top: 18px;
+    }
+
+    .question-box {
+      margin: 24px auto;
+      width: 90%;
+      max-width: 900px;
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.06);
+      text-align: left;
+    }
+
+    .question {
+      font-size: 20px;
+      color: #222;
+      margin-bottom: 8px;
+    }
+
+    .options {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .word {
+      border: 3px solid #888;
+      border-radius: 50%;
+      padding: 12px 18px;
+      font-size: 18px;
+      background-color: #fff;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      user-select: none;
+    }
+    .word:hover { transform: scale(1.05); background-color: #f4f8ff; }
+
+    .selected {
+      border-color: #007bff;
+      background-color: #e6f0ff;
+      box-shadow: 0 0 8px #86b8ff;
+    }
+
+    .correct { border-color: #00a650 !important; background-color: #e8ffec !important; box-shadow: 0 0 8px #80e08f; }
+    .wrong   { border-color: #ff3333 !important; background-color: #ffe6e0 !important; box-shadow: 0 0 8px #ff8f8f; }
+
+    .unanswered-note {
+      color: #a33;
+      font-weight: 600;
+      margin-left: 8px;
+      font-size: 14px;
+    }
+    .locked .word { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+
+    .result-row {
+      display:flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .result-box {
+      background: #f2f2f2;
+      padding: 8px 12px;
+      border-radius: 8px;
+      min-width: 220px;
+      text-align: center;
+      font-weight: 600;
+      color: #222;
+    }
+
+    #buttons {
+      margin: 26px auto 40px;
+      display:flex;
+      justify-content:center;
+      gap:18px;
+    }
+    #buttons button {
+      width: 220px;
+      height: 48px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      color: #fff;
+    }
+    #checkBtn { background: #5b0dec; }
+    #retryBtn { background: #f39c12; }
+    #backPageBtn  { background: #06d117; }
+    #homeBtn  { background: #ec1aec; }
+    #nextBtn  { background: #f58301; }
+
+  
+    #info {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #114b5f;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>ஒத்த / ஒரே ஓசை சொற்களை வட்டமிடு</h1>
+
+  <div id="quiz">
+    <!-- QUESTION 1 -->
+    <div class="question-box" data-qid="1">
+      <div class="question"><b>1.</b> சொல்: <strong>மலை</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="true">தலை</div>
+        <div class="word" data-correct="false">வீடு</div>
+        <div class="word" data-correct="true">தொலை</div>
+        <div class="word" data-correct="false">நாய்</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-1">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-1" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+
+    <!-- QUESTION 2 -->
+    <div class="question-box" data-qid="2">
+      <div class="question"><b>2.</b> சொல்: <strong>கோல்</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="true">போல்</div>
+        <div class="word" data-correct="false">பூ</div>
+        <div class="word" data-correct="true">தோல்</div>
+        <div class="word" data-correct="false">மரம்</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-2">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-2" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+<!-- QUESTION 3 -->
+    <div class="question-box" data-qid="3">
+      <div class="question"><b>3.</b> சொல்: <strong>பல்</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="true">கல்</div>
+        <div class="word" data-correct="false">வாழை</div>
+        <div class="word" data-correct="false">கதை</div>
+        <div class="word" data-correct="true">வில்</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-3">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-3" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+<!-- QUESTION 4 -->
+    <div class="question-box" data-qid="4">
+      <div class="question"><b>4.</b> சொல்: <strong>வரி</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="true">நரி</div>
+        <div class="word" data-correct="false">குறை</div>
+        <div class="word" data-correct="true">கரி</div>
+        <div class="word" data-correct="false">அடை</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-4">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-4" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+  <!-- QUESTION 5 -->
+    <div class="question-box" data-qid="5">
+      <div class="question"><b>5.</b> சொல்: <strong>இலை</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="false">கடை</div>
+        <div class="word" data-correct="true">சிலை</div>
+        <div class="word" data-correct="false">காசு</div>
+        <div class="word" data-correct="true">வலை</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-5">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-5" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+<!-- QUESTION 6 -->
+    <div class="question-box" data-qid="6">
+      <div class="question"><b>6.</b> சொல்: <strong>முயல்</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="true">கயல்</div>
+        <div class="word" data-correct="false">பாய்</div>
+        <div class="word" data-correct="true">வயல்</div>
+        <div class="word" data-correct="false">மணல்</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-6">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-6" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+<!-- QUESTION 7 -->
+    <div class="question-box" data-qid="7">
+      <div class="question"><b>7.</b> சொல்: <strong>அல்லி</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="true">பல்லி</div>
+        <div class="word" data-correct="false">அரளி</div>
+        <div class="word" data-correct="true">மல்லி</div>
+        <div class="word" data-correct="false">அம்புலி</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-7">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-7" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+<!-- QUESTION 8 -->
+    <div class="question-box" data-qid="8">
+      <div class="question"><b>8.</b> சொல்: <strong>குண்டு</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="true">வண்டு</div>
+        <div class="word" data-correct="false">வண்டி</div>
+        <div class="word" data-correct="true">நண்டு</div>
+        <div class="word" data-correct="false">தகடு</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-8">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-8" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+
+<!-- QUESTION 9 -->
+    <div class="question-box" data-qid="9">
+      <div class="question"><b>9.</b> சொல்: <strong>ஆடு</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="false">சக்கரம்</div>
+        <div class="word" data-correct="true">மாடு</div>
+        <div class="word" data-correct="true">தோடு</div>
+        <div class="word" data-correct="false">கடுகு</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-9">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-9" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION 10 -->
+    <div class="question-box" data-qid="10">
+      <div class="question"><b>10.</b> சொல்: <strong>மேகம்</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="true">காகம்</div>
+        <div class="word" data-correct="true">நாகம்</div>
+        <div class="word" data-correct="false">கரகம்</div>
+        <div class="word" data-correct="false">வாகனம்</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-10">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-10" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION 11 -->
+    <div class="question-box" data-qid="11">
+      <div class="question"><b>11.</b> சொல்: <strong>குட்டை</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="false">குளம்</div>
+        <div class="word" data-correct="true">முட்டை</div>
+        <div class="word" data-correct="false">படகு</div>
+        <div class="word" data-correct="true">சட்டை</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-11">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-11" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION 12 -->
+    <div class="question-box" data-qid="12">
+      <div class="question"><b>12.</b> சொல்: <strong>சடை</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="true">ஆடை</div>
+        <div class="word" data-correct="true">குடை</div>
+        <div class="word" data-correct="false">நுழை</div>
+        <div class="word" data-correct="false">காலை</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-12">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-12" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION 13 -->
+    <div class="question-box" data-qid="13">
+      <div class="question"><b>13.</b> சொல்: <strong>தேரை</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="true">கீரை</div>
+        <div class="word" data-correct="false">பறவை</div>
+        <div class="word" data-correct="true">நாரை</div>
+        <div class="word" data-correct="false">கிணறு</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-13">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-13" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION 14 -->
+    <div class="question-box" data-qid="14">
+      <div class="question"><b>14.</b> சொல்: <strong>பெட்டி</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="false">படுக்கை</div>
+        <div class="word" data-correct="true">சட்டி</div>
+        <div class="word" data-correct="false">உருளை</div>
+        <div class="word" data-correct="true">ரொட்டி</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-14">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-14" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION 15 -->
+    <div class="question-box" data-qid="15">
+      <div class="question"><b>15.</b> சொல்: <strong>சேய்</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="true">தாய்</div>
+        <div class="word" data-correct="true">காய்</div>
+        <div class="word" data-correct="false">கொடி</div>
+        <div class="word" data-correct="false">பாய்மரம்</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-15">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-15" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION 16 -->
+    <div class="question-box" data-qid="16">
+      <div class="question"><b>16.</b> சொல்: <strong>வட்டம்</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="false">தடம்</div>
+        <div class="word" data-correct="true">பட்டம்</div>
+        <div class="word" data-correct="true">கட்டம்</div>
+        <div class="word" data-correct="false">கட்டடம்</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-16">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-16" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION 17 -->
+    <div class="question-box" data-qid="17">
+      <div class="question"><b>17.</b> சொல்: <strong>மரம்</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="false">இலை</div>
+        <div class="word" data-correct="false">பூ</div>
+        <div class="word" data-correct="true">கரம்</div>
+        <div class="word" data-correct="true">அரம்</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-17">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-17" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION 18 -->
+    <div class="question-box" data-qid="18">
+      <div class="question"><b>18.</b> சொல்: <strong>நீர்</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="true">ஊர்</div>
+        <div class="word" data-correct="true">பேர்</div>
+        <div class="word" data-correct="false">தரம்</div>
+        <div class="word" data-correct="false">கறை</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-18">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-18" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION 19 -->
+    <div class="question-box" data-qid="19">
+      <div class="question"><b>19.</b> சொல்: <strong>தோள்</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="true">குளம்</div>
+        <div class="word" data-correct="false">வாள்</div>
+        <div class="word" data-correct="false">புலி</div>
+        <div class="word" data-correct="true">ஆள்</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-19">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-19" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTION 20 -->
+    <div class="question-box" data-qid="20">
+      <div class="question"><b>20.</b> சொல்: <strong>யானை</strong> — இதே ஓசை கொண்ட 2 சொற்களை வட்டமிடு</div>
+      <div class="options" data-locked="false">
+        <div class="word" data-correct="false">மிருகம்</div>
+        <div class="word" data-correct="false">காடு</div>
+        <div class="word" data-correct="true">பூனை</div>
+        <div class="word" data-correct="true">பானை</div>
+      </div>
+      <div class="result-row">
+        <div class="result-box" id="result-20">மதிப்பெண்: 0 / 1  | தவறு: 0</div>
+        <div class="unanswered-note" id="unans-20" style="display:none;">விடையளிக்கப்படவில்லை</div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+ 
+
+  <div id="buttons">
+  <button id="backPageBtn">பின்செல்</button>
+  <button id="nextBtn">அடுத்து</button>
+  <button id="checkBtn">சரிபார்</button>
+  <button id="retryBtn">மீண்டும் முயற்சி செய்</button>
+  <button id="homeBtn">ஹோம்</button>
+</div>
+
+<div id="info"></div>
+
+<script>
+  const qBoxes = Array.from(document.querySelectorAll('.question-box'));
+  const checkBtn = document.getElementById('checkBtn');
+  const retryBtn = document.getElementById('retryBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const backPageBtn = document.getElementById('backPageBtn');
+  const homeBtn = document.getElementById('homeBtn');
+  const info = document.getElementById('info');
+  let checkState = 0;
+
+  const QUESTIONS_PER_PAGE = 10;
+  let currentPage = 1;
+  const totalPages = Math.ceil(qBoxes.length / QUESTIONS_PER_PAGE);
+
+  // === ஒரு பக்கத்தை மட்டும் காட்டும் function ===
+  function showPage(page) {
+    qBoxes.forEach((qBox, index) => {
+      const start = (page - 1) * QUESTIONS_PER_PAGE;
+      const end = start + QUESTIONS_PER_PAGE;
+      qBox.style.display = index >= start && index < end ? 'block' : 'none';
+    });
+
+    // பக்கத்தின் அடிப்படையில் பட்டன்களை மாற்று
+    if (page === 1) {
+      backPageBtn.style.display = 'none';
+    } else {
+      backPageBtn.style.display = 'inline-block';
+    }
+
+    if (page === totalPages) {
+      nextBtn.style.display = 'none';
+      checkBtn.style.display = 'inline-block';
+      retryBtn.style.display = 'inline-block';
+      homeBtn.style.display = 'inline-block';
+    } else {
+      nextBtn.style.display = 'inline-block';
+      checkBtn.style.display = 'none';
+      retryBtn.style.display = 'none';
+      homeBtn.style.display = 'none';
+    }
+  }
+
+  // முதல் பக்கம் காட்ட
+  showPage(currentPage);
+
+  // அடுத்து பட்டன்
+  nextBtn.addEventListener('click', () => {
+    if (currentPage < totalPages) {
+      currentPage++;
+      showPage(currentPage);
+      window.scrollTo(0, 0);
+    }
+  });
+
+  // பின்செல் பட்டன் (Previous page)
+  backPageBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      showPage(currentPage);
+      window.scrollTo(0, 0);
+    }
+  });
+
+  // ஹோம் பட்டன்
+  homeBtn.addEventListener('click', () => {
+    window.location.href = 'class1.html'; // <-- இங்கே உன் ஹோம் பக்க URL இடு
+  });
+
+  // சொற்கள் கிளிக் logic
+  document.querySelectorAll('.word').forEach(word => {
+    word.addEventListener('click', () => {
+      const options = word.parentElement;
+      if (options.dataset.locked === 'true') return;
+      const selected = options.querySelectorAll('.selected');
+      if (word.classList.contains('selected')) {
+        word.classList.remove('selected');
+      } else if (selected.length < 2) {
+        word.classList.add('selected');
+      } else {
+        alert('இந்த கேள்விக்கு இரண்டு சொற்களே வட்டமிடலாம்!');
+      }
+    });
+  });
+
+  // மதிப்பெண் கணக்கீடு
+  function evaluateQuestions(lockUnanswered = true) {
+    let totalPossible = qBoxes.length;
+    let totalScore = 0;
+    let totalWrong = 0;
+    let totalUnanswered = 0;
+
+    qBoxes.forEach(qBox => {
+      const qid = qBox.dataset.qid;
+      const options = qBox.querySelectorAll('.word');
+      const selected = qBox.querySelectorAll('.word.selected');
+      let correctCount = 0, wrongCount = 0, totalCorrectInQuestion = 0;
+
+      options.forEach(w => {
+        if (w.dataset.correct === 'true') totalCorrectInQuestion++;
+      });
+
+      if (selected.length === 0) {
+        totalUnanswered++;
+        if (lockUnanswered) {
+          qBox.querySelector('.options').dataset.locked = 'true';
+          qBox.classList.add('locked');
+        }
+        qBox.querySelector(`#unans-${qid}`).style.display = 'inline-block';
+      } else {
+        qBox.querySelector(`#unans-${qid}`).style.display = 'none';
+      }
+
+      options.forEach(w => w.classList.remove('correct', 'wrong'));
+      selected.forEach(w => {
+        if (w.dataset.correct === 'true') {
+          w.classList.add('correct');
+          correctCount++;
+        } else {
+          w.classList.add('wrong');
+          wrongCount++;
+        }
+      });
+
+      let questionScore = 0;
+      if (correctCount === totalCorrectInQuestion) questionScore = 1;
+      else if (correctCount > 0) questionScore = 0.5;
+
+      totalScore += questionScore;
+      totalWrong += wrongCount;
+
+      qBox.querySelector('.result-box').textContent =
+        `மதிப்பெண்: ${questionScore} / 1 | தவறு: ${wrongCount}`;
+    });
+
+    return { totalPossible, totalScore, totalWrong, totalUnanswered };
+  }
+
+  // சரிபார் பட்டன்
+  checkBtn.addEventListener('click', () => {
+    if (checkState === 0) {
+      const res = evaluateQuestions(true);
+      info.textContent =
+        `மொத்த மதிப்பெண்: ${res.totalScore} / ${res.totalPossible} | தவறுகள்: ${res.totalWrong} | விடையளிக்காதவை: ${res.totalUnanswered}`;
+      checkState = 1;
+      checkBtn.textContent = 'மீண்டும் சரிபார் (அனுமதிக்க)';
+    } else {
+      qBoxes.forEach(qBox => {
+        const opts = qBox.querySelector('.options');
+        if (opts.dataset.locked === 'true') {
+          opts.dataset.locked = 'false';
+          qBox.classList.remove('locked');
+          qBox.querySelector('.unanswered-note').style.display = 'none';
+        }
+      });
+      info.textContent = 'விடையளிக்காத கேள்விகள் திறக்கப்பட்டன. மீண்டும் "சரிபார்" அழுத்தவும்.';
+      checkState = 0;
+      checkBtn.textContent = 'சரிபார்';
+    }
+  });
+
+  // மீண்டும் முயற்சி செய் பட்டன்
+  retryBtn.addEventListener('click', () => {
+    document.querySelectorAll('.word').forEach(w => w.classList.remove('selected', 'correct', 'wrong'));
+    qBoxes.forEach(qBox => {
+      qBox.querySelector('.options').dataset.locked = 'false';
+      qBox.classList.remove('locked');
+      qBox.querySelector('.unanswered-note').style.display = 'none';
+      qBox.querySelector('.result-box').textContent = 'மதிப்பெண்: 0 / 1 | தவறு: 0';
+    });
+    info.textContent = '';
+    checkState = 0;
+    checkBtn.textContent = 'சரிபார்';
+    currentPage = 1;
+    showPage(currentPage);
+  });
+</script>

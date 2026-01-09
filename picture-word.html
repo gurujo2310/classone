@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <title>படம் மற்றும் பெயரை கோடு கொண்டு இணைக்கும் பாடம்</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 10px;
+      padding: 20px;
+    }
+
+    h1 {
+      border: 3px solid #ff9933;
+      border-radius: 10px;
+      padding: 15px 20px;
+      background-color: #ffe0b3;
+      color: #333333;
+      display: inline-block;
+      font-size: 32px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      margin-top: 50px;
+      position: relative;
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 400px;
+    }
+
+    #images .item {
+  width: 200px;
+  height: 150px;
+  border: 2px solid #333;
+  border-radius: 10px;
+  margin: 10px 0;
+  margin-left: 80px;
+  cursor: pointer;
+  user-select: none;
+  background-size: contain;      /* cover → contain */
+  background-position: center;
+  background-repeat: no-repeat;  /* படம் repeat ஆகாதபடி */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+
+    #images .item:hover {
+      border-color: #ff6600;
+      transform: scale(1.05);
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    }
+
+    #names .item {
+      width: 300px;
+      height: 60px;
+      margin: 55px 150px ;
+      background-color: #9de4ee;
+      border: 2px solid #333;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    #names .item:hover {
+      background-color: #ffd633;
+      transform: scale(1.05);
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+#buttons {
+  margin-top: 10px;
+  margin-left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;                  /* 🔹 இடைவெளி சிறிது அதிகம் */
+}
+
+#buttons button {
+  width: 300px;               /* ஒவ்வொரு button-க்கும் ஒரே அகலம் */
+  height: 50px;               /* ஒரே உயரம் */
+  background-color: #5b0dec;  /* முதன்மையான வண்ணம் */
+  color: white;               /* எழுத்து வண்ணம் */
+  border: none;               /* பழைய border அகற்று */
+  border-radius: 10px;        /* வளைந்த மூலைகள் */
+  font-size: 18px;            /* எழுத்து அளவு */
+  cursor: pointer;
+  margin: 0;                /* button-களுக்கு இடைவெளி */
+  transition: all 0.3s ease;  /* smooth hover effect */
+}
+
+#buttons button:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+  box-shadow: 3px 3px 10px rgba(0,0,0,0.3);
+}
+
+#buttons button:active {
+  transform: scale(0.95);
+}
+
+    #message {
+      margin-top: 20px;
+      font-size: 20px;
+      color: green;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <h1>படத்தையும் பெயரையும் கிளிக் செய்து இணைக்கவும்</h1>
+
+  <canvas id="canvas"></canvas>
+
+  <div class="container">
+    <div class="column" id="images">
+      <div class="item" data-answer="நாய்" style="background-image:url('css/images/dog.jpg')"></div>
+      <div class="item" data-answer="பூனை" style="background-image:url('css/images/cat2.jpg')"></div>
+      <div class="item" data-answer="மாடு" style="background-image:url('css/images/cow.jpeg')"></div>
+      <div class="item" data-answer="தாமரை" style="background-image:url('css/images/தாமரை.jpg')"></div>
+      <div class="item" data-answer="மீன்" style="background-image:url('css/images/மீன்2.jpeg')"></div>
+      <div class="item" data-answer="உருளைகிழங்கு" style="background-image:url('css/images/உருளைகிழங்கு.jpg')"></div>
+      <div class="item" data-answer="கொய்யா" style="background-image:url('css/images/கொய்யா.jpg')"></div>
+      <div class="item" data-answer="முருங்கைக்காய்" style="background-image:url('css/images/முருங்கை.jpeg')"></div>
+      <div class="item" data-answer="எறும்பு" style="background-image:url('css/images/ant.jpg')"></div>
+      <div class="item" data-answer="யானை" style="background-image:url('css/images/elephant.jpg')"></div>
+      <div class="item" data-answer="ஒட்டகம்" style="background-image:url('css/images/camel.jpg')"></div>
+      <div class="item" data-answer="ஒட்டகச்சிவிங்கி" style="background-image:url('css/images/giraffe.jpg')"></div>
+      <div class="item" data-answer="கழுகு" style="background-image:url('css/images/eagle.jpg')"></div>
+      <div class="item" data-answer="சுரைக்காய்" style="background-image:url('css/images/சுரைக்காய்.jpg')"></div>
+      <div class="item" data-answer="பீர்க்கங்காய்" style="background-image:url('css/images/பீர்க்கங்காய்.jpg')"></div>
+      <div class="item" data-answer="பூசணிக்காய்" style="background-image:url('css/images/புசணி.jpeg')"></div>
+      <div class="item" data-answer="அணில்" style="background-image:url('css/images/squirrel.jpg')"></div>
+      <div class="item" data-answer="கழுதை" style="background-image:url('css/images/donkey.jpg')"></div>
+      <div class="item" data-answer="குதிரை" style="background-image:url('css/images/horse.jpeg')"></div>
+      <div class="item" data-answer="கோழி" style="background-image:url('css/images/hen.jpg')"></div>
+      <div class="item" data-answer="பப்பாளி" style="background-image:url('css/images/பப்பாளி.jpg')"></div>
+      <div class="item" data-answer="பலாப்பழம்" style="background-image:url('css/images/பலாப்பழம்.jpg')"></div>
+      <div class="item" data-answer="பாகற்காய்" style="background-image:url('css/images/பாகற்காய்.jpg')"></div>
+      <div class="item" data-answer="பல்லி" style="background-image:url('css/images/பல்லி.jpeg')"></div>
+      <div class="item" data-answer="எலி" style="background-image:url('css/images/rat.jpg')"></div>
+      <div class="item" data-answer="ஆரஞ்சு" style="background-image:url('css/images/orange.jpg')"></div>
+      <div class="item" data-answer="இளநீர்" style="background-image:url('css/images/இளநீர்.jpg')"></div>
+      <div class="item" data-answer="நண்டு" style="background-image:url('css/images/நண்டு.jpg')"></div>
+      <div class="item" data-answer="சங்கு" style="background-image:url('css/images/சங்கு.jpg')"></div>
+      <div class="item" data-answer="முட்டை" style="background-image:url('css/images/egg.jpeg')"></div>
+    </div>
+
+    <div class="column" id="names">
+   
+      <div class="item">கொய்யா</div>
+      <div class="item">யானை</div>
+      <div class="item">எறும்பு</div>
+      <div class="item">உருளைகிழங்கு</div>
+      <div class="item">தாமரை</div>
+      <div class="item">நாய்</div>
+      <div class="item">முருங்கைக்காய்</div>
+      <div class="item">மாடு</div>
+      <div class="item">பூனை</div>
+      <div class="item">ஒட்டகம்</div>
+      <div class="item">ஒட்டகச்சிவிங்கி</div>
+      <div class="item">கழுகு</div>
+      <div class="item">மீன்</div>
+      <div class="item">கழுதை</div>
+      <div class="item">அணில்</div>
+      <div class="item">கோழி</div>
+      <div class="item">பீர்க்கங்காய்</div>
+      <div class="item">சுரைக்காய்</div>
+      <div class="item">இளநீர்</div>
+      <div class="item">பூசணிக்காய்</div>
+      <div class="item">சங்கு</div>
+      <div class="item">முட்டை</div>
+      <div class="item">பல்லி</div>
+      <div class="item">ஆரஞ்சு</div>
+      <div class="item">குதிரை</div>
+      <div class="item">பாகற்காய்</div>
+      <div class="item">எலி</div>
+      <div class="item">பப்பாளி</div>
+      <div class="item">பலாப்பழம்</div>
+      <div class="item">நண்டு</div>
+    </div>
+     </div>
+
+  <div class="container">
+    <div id="buttons">
+    <button id="checkBtn">சரிபார்க்க</button>
+    <button id="retryBtn">மீண்டும் முயற்சி செய்</button>
+    <button id="backBtn" >பின் செல்ல</button>
+      
+    <div id="message"></div>
+  </div>
+</div>
+
+  
+  <script>
+  const images = document.querySelectorAll("#images .item");
+  const names = document.querySelectorAll("#names .item");
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  function resizeCanvas() {
+    canvas.width = document.body.scrollWidth;
+    canvas.height = document.body.scrollHeight;
+    redrawLines();
+  }
+  window.addEventListener("resize", resizeCanvas);
+
+  let selectedImage = null;
+  const connections = [];
+
+  images.forEach(img => {
+    img.addEventListener("click", () => {
+      selectedImage = img;
+    });
+  });
+
+  names.forEach(name => {
+    name.addEventListener("click", () => {
+      if (selectedImage) {
+        // ❌ அந்த படம் ஏற்கனவே இணைக்கப்பட்டதா?
+        if (connections.find(c => c.from === selectedImage)) {
+          alert("இந்த படம் ஏற்கனவே இணைக்கப்பட்டுள்ளது!");
+          selectedImage = null;
+          return;
+        }
+
+        // ❌ அந்த பெயர் ஏற்கனவே இணைக்கப்பட்டதா?
+        if (connections.find(c => c.to === name)) {
+          alert("இந்த பெயர் ஏற்கனவே இணைக்கப்பட்டுள்ளது!");
+          selectedImage = null;
+          return;
+        }
+
+        // ✅ இரண்டும் புதியது என்றால் — இணை
+        connections.push({ from: selectedImage, to: name });
+        drawLine(selectedImage, name);
+        selectedImage = null;
+      }
+    });
+  });
+
+  function drawLine(from, to) {
+    const rect1 = from.getBoundingClientRect();
+    const rect2 = to.getBoundingClientRect();
+
+    ctx.beginPath();
+    ctx.moveTo(rect1.right, rect1.top + rect1.height / 2 + window.scrollY);
+    ctx.lineTo(rect2.left, rect2.top + rect2.height / 2 + window.scrollY);
+    ctx.strokeStyle = "blue";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+
+  function redrawLines() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    connections.forEach(c => drawLine(c.from, c.to));
+  }
+
+  document.getElementById("retryBtn").addEventListener("click", () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    connections.length = 0;
+    document.getElementById("message").innerText = "";
+  });
+
+  document.getElementById("checkBtn").addEventListener("click", () => {
+    let correctCount = 0;
+    const total = images.length;
+
+    connections.forEach(c => {
+      if (c.from.dataset.answer === c.to.innerText) {
+        correctCount++;
+      }
+    });
+
+    let message = `மொத்த கேள்விகள்: ${total}\nசரியானவை: ${correctCount}\n`;
+    if (correctCount < total) {
+      message += "மீதமுள்ளவை தவறு! மீண்டும் முயற்சி செய்!";
+    } else {
+      message += "அனைத்து பதிலும் சரியானது! 🌟";
+    }
+
+    document.getElementById("message").innerText = message;
+  });
+
+ resizeCanvas();
+
+  
+backBtn.addEventListener('click', () => {
+     window.location.href = "class1.html"; 
+  });
+
+ 
+</script>
+
+</body>
+</html>

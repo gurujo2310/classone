@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<title>தமிழ் எழுத்து பயிற்சி</title>
+
+<style>
+body{
+    font-family: 'Noto Sans Tamil', sans-serif;
+    background:#fff;
+    text-align:center;
+}
+.container{
+    width:600px;
+    margin:40px auto;
+}
+h2{
+    font-size:22px;
+    margin-bottom:10px;
+}
+.score-box{
+    font-size:18px;
+    margin-bottom:15px;
+    color:#333;
+}
+
+/* WORD BOX */
+.word-box{
+    border:2px solid #999;
+    border-radius:10px;
+    padding:15px;
+    margin-bottom:25px;
+    background:#fffdf0;
+}
+
+/* LETTER BOXES */
+.letters{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+}
+.letter{
+    width:60px;
+    height:60px;
+    border:2px solid #e91e63;
+    border-radius:8px;
+    font-size:28px;
+    color:#e91e63;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#fff;
+}
+
+input{
+    width:90%;
+    padding:12px;
+    font-size:18px;
+    border-radius:6px;
+    border:1px solid #ccc;
+}
+button{
+    padding:10px 25px;
+    font-size:16px;
+    border:none;
+    border-radius:6px;
+    margin:10px;
+    cursor:pointer;
+}
+.check{ background:#4caf50; color:#fff; }
+.next{ background:#2196f3; color:#fff; }
+.retry{ background:#ff9800; color:#fff; }
+
+button:disabled{
+    background:#aaa;
+    cursor:not-allowed;
+}
+#result{
+    font-size:18px;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>கலைந்த எழுத்துகளில் சொல்லை கண்டுபிடி</h2>
+
+    <!-- SCORE -->
+    <div class="score-box">
+        சொல்: <span id="count">0</span> / 50 |
+        மதிப்பெண்: <span id="score">0</span>
+    </div>
+
+    <div class="word-box">
+        <div class="letters" id="letterBoxes"></div>
+    </div>
+
+    <input type="text" id="answer" placeholder="சொல்லை எழுது">
+
+    <div>
+        <button class="check" onclick="check()">Check</button>
+        <button class="next" onclick="nextWord()" id="nextBtn">Next</button>
+        <button class="retry" onclick="restartGame()" id="retryBtn" style="display:none;">
+            மீண்டும் முயற்சி செய்
+        </button>
+    </div>
+
+    <div id="result"></div>
+</div>
+
+<script>
+const words = [
+"மனம்","துவா","மரம்","பூனை","வாத்து","மழை","நிலா","பந்து","விளக்கு","நட்பு",
+"முயல்","கரடி","சிங்கம்","ஒட்டகம்","விளையாட்டு","பள்ளிக்கூடம்","பேருந்து",
+"சாப்பாடு","உண்டியல்","கோபுரம்","கூட்டம்","குகைக்கோயில்","பட்டினம்","கடற்கரை",
+"தவளை","கப்பல்","துறைமுகம்","அதிகாலை","மாலைநேரம்","கடவுள்","மீன்வலை",
+"உணவுக்கூடம்","ஏலக்காய்","கிராம்பு","சாம்பார்","பொரியல்","அப்பளம்",
+"காரக்குழம்பு","வாழையிலை","வெண்டைக்காய்","கத்தரிக்காய்","அடுப்பு",
+"பாகற்காய்","எலுமிச்சை","மோர்குழம்பு","கண்ணாடி","கட்டில்","தூக்கம்"
+];
+
+let currentWord = "";
+let score = 0;
+let count = 0;
+const MAX = 50;
+
+/* Tamil-safe split */
+function tamilSplit(word){
+    return word.match(/[\u0B80-\u0BFF][\u0BCD\u0BBE-\u0BCC]*/g);
+}
+
+function shuffle(array){
+    for(let i = array.length - 1; i > 0; i--){
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function nextWord(){
+    if(count >= MAX){
+        document.getElementById("result").innerText =
+            "🎉 பயிற்சி முடிந்தது! உங்கள் மொத்த மதிப்பெண்: " + score + " / 50";
+        document.getElementById("nextBtn").disabled = true;
+        document.getElementById("retryBtn").style.display = "inline-block";
+        return;
+    }
+
+    currentWord = words[Math.floor(Math.random() * words.length)];
+    let letters = shuffle(tamilSplit(currentWord));
+
+    let box = document.getElementById("letterBoxes");
+    box.innerHTML = "";
+
+    letters.forEach(l => {
+        let div = document.createElement("div");
+        div.className = "letter";
+        div.innerText = l;
+        box.appendChild(div);
+    });
+
+    document.getElementById("answer").value = "";
+    document.getElementById("result").innerText = "";
+
+    count++;
+    document.getElementById("count").innerText = count;
+}
+
+function check(){
+    let ans = document.getElementById("answer").value.trim();
+    if(ans === currentWord){
+        score++;
+        document.getElementById("score").innerText = score;
+        document.getElementById("result").innerText = "✅ சரி!";
+        document.getElementById("result").style.color = "green";
+    }else{
+        document.getElementById("result").innerText =
+            "❌ தவறு | சரியான சொல்: " + currentWord;
+        document.getElementById("result").style.color = "red";
+    }
+}
+
+function restartGame(){
+    score = 0;
+    count = 0;
+    document.getElementById("score").innerText = 0;
+    document.getElementById("count").innerText = 0;
+    document.getElementById("result").innerText = "";
+    document.getElementById("nextBtn").disabled = false;
+    document.getElementById("retryBtn").style.display = "none";
+    nextWord();
+}
+
+nextWord();
+</script>
+
+</body>
+</html>

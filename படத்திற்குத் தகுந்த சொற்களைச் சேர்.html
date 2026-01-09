@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>படத்திற்கு தகுந்த சொற்களைச் சேர்</title>
+<style>
+  body {
+    font-family: 'Latha', sans-serif;
+    background: #f9f9fc;
+    margin: 0;
+    text-align: center;
+  }
+  h2 {
+    background: #ff6666;
+    color: white;
+    margin: 0;
+    padding: 15px;
+  }
+
+  .game-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    margin: 30px auto;
+    max-width: 1500px;
+  }
+
+  .word-row, .image-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+  }
+
+  .word, .dropzone {
+    background: white;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    width: 120px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  .word {
+    cursor: grab;
+    background: #fff9e6;
+  }
+
+  .image-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 160px;
+  border-radius: 10px;
+  gap: 10px;
+}
+
+.image-box img {
+  width: 160px;
+  height: 150px;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  background: white;
+}
+
+
+  .dropzone {
+    margin-top: 8px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #ffffff;
+  }
+
+  .dropzone.hover {
+    border-color: #007bff;
+    background: #e8f0ff;
+  }
+
+  .correct { border-color: green; background: #d4edda; color: green; font-weight: bold; }
+  .wrong { border-color: red; background: #f8d7da; color: red; font-weight: bold; }
+
+  .btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 10px;
+  }
+
+  .btn:hover { opacity: 0.9; }
+
+  #result {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<h2>🎯 படத்துடன் சொல் பொருத்தம் - வகுப்பு 1</h2>
+
+<div class="game-wrapper">
+  <div id="wordRow" class="word-row"></div>
+  <div id="imageRow" class="image-row"></div>
+</div>
+
+<div>
+  <button class="btn" onclick="goHome()">🏠 முகப்பு</button>
+  <button class="btn" onclick="prevPage()">⬅️ பின் செல்</button>
+  <button class="btn" onclick="nextPage()">➡️ அடுத்தது</button>
+  <button id="checkBtn" class="btn" onclick="checkAnswers()">✅ சரிபார்க்க</button>
+  <button class="btn" onclick="restartGame()">🔁 மீண்டும் முயற்சி செய்</button>
+</div>
+
+<div id="result"></div>
+
+<script>
+const allSets = [
+  [
+    {word:"பல் துலக்கு", img:"css/images/பல் துலக்கு.jpg"},
+    {word:"குளி", img:"css/images/குளி.jpg"},
+    {word:"உடை அணி", img:"css/images/உடையணி.jpg"},
+    {word:"முடியைச் சீவு", img:"css/images/தலைசீவு.jpg"},
+    {word:"உணவைச் சாப்பிடு", img:"css/images/சாப்பிடு.jpg"},
+    {word:"பெரியோரை வணங்கு", img:"css/images/வணங்கு2.jpeg"},
+    {word:"காலையில் எழு", img:"css/images/காலையில் எழு.jpg"},
+    {word:"காலணி அணி", img:"css/images/காலணி அணி.jpg"},
+    {word:"தினமும் படி", img:"css/images/தினமும் படி.jpg"},
+    {word:"வீட்டுப்பாடம் எழுது",img:"css/images/வீட்டுப்பாடம் எழுது.jpeg"},
+  ],
+  [
+    {word:"கால் பந்தாட்டம்", img:"css/images/கால் பந்தாட்டம்.jpg"},
+    {word:"மட்டை பந்தாட்டம்", img:"css/images/மட்டை பந்தாட்டம்.jpg"},
+    {word:"சதுரங்கம்", img:"css/images/சதுரங்கம்.jpeg"},
+    {word:"குண்டு எறிதல்", img:"css/images/குண்டு எறிதல்.jpg"},
+    {word:"ஹாக்கி", img:"css/images/ஹாக்கி.jpeg"},
+    {word:"ஓட்டப்பந்தயம்", img:"css/images/ஓட்டப்பந்தயம்.jpg"},
+    {word:"உயரம் தாண்டுதல்", img:"css/images/உயரம் தாண்டுதல்.jpg"},
+    {word:"சடுகுடு", img:"css/images/கபடி.jpg"},
+    {word:"நீச்சல் போட்டி", img:"css/images/நீச்சல் போட்டி.jpg"},
+    {word:"ஈட்டி எறிதல்", img:"css/images/ஈட்டி எறிதல்.jpg"}
+  ]
+];
+
+let currentSet = 0;
+let score = 0;
+let total = allSets.length * 10;
+let answersBySet = {};
+let shuffledSets = {};
+let resultBySet = {}; // 👈 சரி / தவறு status சேமிக்க
+
+
+function loadGame() {
+  const wordRow = document.getElementById("wordRow");
+  const imageRow = document.getElementById("imageRow");
+  wordRow.innerHTML = "";
+  imageRow.innerHTML = "";
+  document.getElementById("result").textContent = "";
+
+  const checkBtn = document.getElementById("checkBtn");
+  checkBtn.style.display =
+    currentSet === allSets.length - 1 ? "inline-block" : "none";
+
+  const set = allSets[currentSet];
+
+  // 🔒 shuffle only once per set
+  if (!shuffledSets[currentSet]) {
+    shuffledSets[currentSet] = [...set].sort(() => Math.random() - 0.5);
+  }
+  const shuffledImages = shuffledSets[currentSet];
+
+  // சொற்கள்
+  set.forEach(item => {
+    const wordDiv = document.createElement("div");
+    wordDiv.className = "word";
+    wordDiv.textContent = item.word;
+    wordDiv.draggable = true;
+    wordDiv.dataset.word = item.word;
+    wordDiv.ondragstart = e =>
+      e.dataTransfer.setData("text", item.word);
+    wordRow.appendChild(wordDiv);
+  });
+
+  // படங்கள்
+  shuffledImages.forEach(item => {
+    const box = document.createElement("div");
+    box.className = "image-box";
+
+    const img = document.createElement("img");
+    img.src = item.img;
+
+    const drop = document.createElement("div");
+drop.className = "dropzone";
+drop.dataset.word = item.word;
+
+// பழைய பதில்
+if (answersBySet[currentSet]?.[item.word]) {
+  drop.textContent = answersBySet[currentSet][item.word];
+}
+
+// சரி / தவறு color
+if (resultBySet[currentSet]?.[item.word] === "correct") {
+  drop.classList.add("correct");
+}
+if (resultBySet[currentSet]?.[item.word] === "wrong") {
+  drop.classList.add("wrong");
+}
+
+// ⭐ REQUIRED for drag & drop
+drop.ondragover = e => {
+  e.preventDefault();
+  drop.classList.add("hover");
+};
+
+drop.ondragleave = () => {
+  drop.classList.remove("hover");
+};
+
+drop.ondrop = e => {
+  e.preventDefault();
+  drop.classList.remove("hover");
+
+  const draggedWord = e.dataTransfer.getData("text/plain");
+  drop.textContent = draggedWord;
+
+  drop.classList.remove("correct", "wrong");
+
+  if (!answersBySet[currentSet]) {
+    answersBySet[currentSet] = {};
+  }
+  answersBySet[currentSet][item.word] = draggedWord;
+};
+
+
+
+    box.appendChild(img);
+    box.appendChild(drop);
+    imageRow.appendChild(box);
+  });
+}
+
+
+function nextPage() {
+  if (currentSet < allSets.length - 1) {
+    currentSet++;
+    loadGame();
+  } else {
+    alert("இது கடைசி பக்கம்!");
+  }
+}
+
+function prevPage() {
+  if (currentSet > 0) {
+    currentSet--;
+    loadGame();
+  } else {
+    alert("இது முதல் பக்கம்!");
+  }
+}
+
+function checkAnswers() {
+  let correct = 0;
+  let totalQuestions = 0;
+  resultBySet = {}; // reset
+
+  allSets.forEach((set, setIndex) => {
+    resultBySet[setIndex] = {};
+
+    set.forEach(item => {
+      totalQuestions++;
+
+      if (
+        answersBySet[setIndex] &&
+        answersBySet[setIndex][item.word] === item.word
+      ) {
+        resultBySet[setIndex][item.word] = "correct";
+        correct++;
+      } else {
+        resultBySet[setIndex][item.word] = "wrong";
+      }
+    });
+  });
+
+  loadGame(); // 👈 current page-ல் color காட்ட
+  document.getElementById("result").textContent =
+    `✅ நீங்கள் ${correct} / ${totalQuestions} சரியாக பொருத்தியுள்ளீர்கள்!`;
+}
+
+
+function restartGame() {
+  currentSet = 0;
+  score = 0;
+ answersBySet = {};
+resultBySet = {};
+shuffledSets = {};
+
+  loadGame();
+  document.getElementById("result").textContent = "";
+}
+
+function goHome() {
+  // உங்கள் ஹோம் பக்கம் (index.html அல்லது வேறு link)
+  window.location.href = "index.html";
+}
+
+loadGame();
+</script>
+</body>
+</html>

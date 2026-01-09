@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>தமிழ் எழுத்து - அ (புள்ளி இணைப்பு பயிற்சி)</title>
+<style>
+body {
+  background: #fff8e1;
+  text-align: center;
+  font-family: 'Noto Sans Tamil';
+}
+canvas {
+  border: 2px solid #333;
+  border-radius: 12px;
+  margin-top: 20px;
+  background-color: white;
+}
+button {
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  background: #0288d1;
+  color: #fff;
+  border-radius: 8px;
+}
+#result { font-size: 1.3em; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<h2>“இ” எழுத்து - புள்ளிகளை இணை</h2>
+<canvas id="board" width="500" height="400"></canvas><br>
+<button onclick="checkDrawing()">சரி பார்க்க</button>
+<button onclick="clearCanvas()">அழி</button>
+<div id="result"></div>
+
+
+<script>
+  
+const canvas = document.getElementById("board");
+const ctx = canvas.getContext("2d");
+let drawing = false;
+let userPath = [];
+
+// --- “அ” எழுத்து புள்ளிகள் (AA.jpg போல காணும் அமைப்பு) --- 
+const dotPoints = [
+  {
+    "x": 148,
+    "y": 314
+  },
+  {
+    "x": 148,
+    "y": 265
+  },
+  {
+    "x": 150,
+    "y": 217
+  },
+  {
+    "x": 148,
+    "y": 165
+  },
+  {
+    "x": 149,
+    "y": 108
+  },
+  {
+    "x": 198,
+    "y": 106
+  },
+  {
+    "x": 246,
+    "y": 106
+  },
+  {
+    "x": 296,
+    "y": 106
+  },
+  {
+    "x": 342,
+    "y": 105
+  },
+  {
+    "x": 386,
+    "y": 106
+  },
+  {
+    "x": 295,
+    "y": 157
+  },
+  {
+    "x": 295,
+    "y": 214
+  },
+  {
+    "x": 297,
+    "y": 263
+  },
+  {
+    "x": 294,
+    "y": 315
+  },
+  {
+    "x": 222,
+    "y": 191
+  },
+  {
+    "x": 239,
+    "y": 209
+  },
+  {
+    "x": 222,
+    "y": 225
+  },
+  {
+    "x": 206,
+    "y": 208
+  },
+  {
+    "x": 367,
+    "y": 190
+  },
+  {
+    "x": 385,
+    "y": 209
+  },
+  {
+    "x": 368,
+    "y": 224
+  },
+  {
+    "x": 354,
+    "y": 209
+  }
+]
+// புள்ளிகள் வரை
+function drawDots(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle="black";
+  for(const d of dotPoints){
+    ctx.beginPath();
+    ctx.arc(d.x,d.y,4,0,Math.PI*2);
+    ctx.fill();
+  }
+}
+drawDots();
+
+// வரையல்
+canvas.addEventListener("mousedown",()=>{drawing=true; ctx.beginPath();});
+canvas.addEventListener("mouseup",()=>drawing=false);
+canvas.addEventListener("mousemove",e=>{
+  if(!drawing)return;
+  const r=canvas.getBoundingClientRect();
+  const x=e.clientX-r.left, y=e.clientY-r.top;
+  userPath.push({x,y});
+  ctx.strokeStyle="blue"; ctx.lineWidth=3;
+  ctx.lineTo(x,y); ctx.stroke();
+});
+
+// சரிபார்ப்பு
+function checkDrawing(){
+  let matched=0;
+  for(const dot of dotPoints){
+    for(const u of userPath){
+      const dist=Math.hypot(dot.x-u.x,dot.y-u.y);
+      if(dist<12){ matched++; break; }
+    }
+  }
+  const percent = matched / dotPoints.length;
+  if(percent>=1){
+    document.getElementById("result").innerHTML="✅ நன்றாக வரையப்பட்டிருக்கிறது!";
+  } else {
+    document.getElementById("result").innerHTML="❌ புள்ளிகளை சரியாக இணைக்க வேண்டும்!";
+  }
+}
+
+// அழி
+function clearCanvas(){
+  userPath=[];
+  drawDots();
+  document.getElementById("result").innerText="";
+}
+</script>
+
+</body>
+</html>

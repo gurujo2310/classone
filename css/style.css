@@ -1,0 +1,76 @@
+body {
+  font-family: 'Noto Sans Tamil', sans-serif;
+  background: linear-gradient(135deg, #f8f9fa, #ffe6e6);
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+
+h1, h2 {
+  color: #d6336c;
+}
+
+.container {
+  margin-top: 100px;
+}
+
+.main-btn, .back-btn {
+  background-color: #d6336c;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 15px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 20px;
+}
+
+.main-btn:hover, .back-btn:hover {
+  background-color: #b91d54;
+}
+
+.lessons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 15px;
+  margin-top: 30px;
+}
+.lesson {
+  background-color: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  font-size: 18px;
+  cursor: pointer;
+  transition: 0.3s;
+  text-align: center;
+  white-space: normal;
+  line-height: 1.5;
+  height: 80px;         /* 🔹 ஒவ்வொரு கார்டுக்கும் ஒரே உயரம் */
+  display: flex;         /* text vertical center */
+  flex-direction: column;
+  justify-content: center; /* நடுவில் align */
+}
+
+
+
+.lesson .title {
+  color: #d6336c;   /* 🔹 இதுவே நிறம் – வேண்டுமானால் மாற்றலாம் */
+  font-weight: bold;
+  font-size: 19px;
+  display: inline-block;
+  margin-bottom: 5px;
+  background: #fff0f5;
+  padding: 4px 10px;
+  border-radius: 10px;
+  margin-right: 15px;  /* 🔹 'சொல் எழுது'க்கு பின் gap */
+
+}
+
+
+
+.lesson:hover {
+  background-color: #ffe6f0;
+  transform: scale(1.05);
+}

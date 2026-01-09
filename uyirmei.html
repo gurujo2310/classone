@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>தமிழ் எழுத்து எழுதிப் பழகு ✍️</title>
+<style>
+  body {
+    font-family: 'TamilDottedFont01', sans-serif; 
+    background: #fff7e6;
+    text-align: center;
+    padding: 20px;
+  }
+
+  h1 {
+    color: #d35400;
+    margin-bottom: 20px;
+  }
+
+  .tab-buttons {
+    margin-bottom: 20px;
+  }
+
+  .tab-buttons button {
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .tab-buttons button.active {
+    background-color: #e65100;
+  }
+
+  .letters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 15px;
+  }
+
+  .letter-box {
+    background: white;
+    border: 2px solid #f39c12;
+    border-radius: 10px;
+    padding: 15px;
+    font-size: 35px;
+    color: #2c3e50;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  .letter-box canvas {
+    border: 1px dashed #ccc;
+    margin-top: 10px;
+    background: #fafafa;
+    border-radius: 8px;
+    width: 400px;
+    height: 350px;
+  }
+
+  .clear-single-btn {
+    margin-top: 10px;
+    background-color: #d32f2f;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  #back-btn {
+    margin-top: 20px;
+    background-color: #1976d2;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  @font-face {
+  font-family: 'TamilDottedFont01';
+  src: url('fonts/TAMIL\ DOTED\ FONT\ 01.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+</style>
+</head>
+<body>
+
+<h1>தமிழ் எழுத்து எழுதிப் பழகு ✍️</h1>
+
+<div class="tab-buttons">
+  <button id="uyir-btn" class="active">உயிரெழுத்துகள்</button>
+  <button id="mei-btn">மெய்யெழுத்துகள்</button>
+</div>
+
+<div id="letters-container" class="letters-grid"></div>
+
+<button id="back-btn">⬅️ Back</button>
+
+<script>
+  const uyirEzhuthukal = ["அ","ஆ","இ","ஈ","உ","ஊ","எ","ஏ","ஐ","ஒ","ஓ","ஔ"];
+  const meiEzhuthukal = ["க்","ச்","ட்","த்","ப்","ற்","ஞ்","ங்","ண்","ந்","ம்","ன்","ய்","ர்","ல்","வ்","ழ்","ள்"];
+
+  const lettersContainer = document.getElementById('letters-container');
+  const uyirBtn = document.getElementById('uyir-btn');
+  const meiBtn = document.getElementById('mei-btn');
+  const backBtn = document.getElementById('back-btn');
+
+  // 🔹 Dotted Tamil Letter Drawing
+  function drawDottedLetter(canvas, letter) {
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // "ஔ" எழுத்துக்கு சிறிய size
+  const fontSize = letter === "ஔ" ? 170 : 200;
+  ctx.font = `bold ${fontSize}px 'TamilDottedFont01'`;
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.strokeStyle = "rgba(0,0,0,0.4)";
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([3, 6]); // dotted effect
+  ctx.strokeText(letter, canvas.width / 2, canvas.height / 2);
+  ctx.setLineDash([]); // reset
+}
+
+
+  // 🔹 Create all Letter Boxes
+  function createLetterBoxes(letters) {
+    lettersContainer.innerHTML = "";
+    letters.forEach(letter => {
+      const div = document.createElement('div');
+      div.className = 'letter-box';
+      div.innerHTML = `
+        <div><strong>${letter}</strong></div>
+        <canvas width="400" height="350"></canvas>
+        <button class="clear-single-btn">🧹 அழி</button>
+      `;
+      lettersContainer.appendChild(div);
+
+      const canvas = div.querySelector('canvas');
+      drawDottedLetter(canvas, letter);
+      const ctx = canvas.getContext('2d');
+      let drawing = false;
+
+      // ✏️ Mouse events
+      canvas.addEventListener('mousedown', (e) => {
+        drawing = true;
+        ctx.beginPath();
+        ctx.moveTo(e.offsetX, e.offsetY);
+      });
+      canvas.addEventListener('mousemove', (e) => {
+        if (!drawing) return;
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.stroke();
+      });
+      canvas.addEventListener('mouseup', () => drawing = false);
+      canvas.addEventListener('mouseleave', () => drawing = false);
+
+      // 📱 Touch events
+      canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        ctx.beginPath();
+        ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        drawing = true;
+      });
+      canvas.addEventListener('touchmove', (e) => {
+        if (!drawing) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.stroke();
+      });
+      canvas.addEventListener('touchend', () => drawing = false);
+
+      // 🧹 Single Clear Button
+      const clearBtn = div.querySelector('.clear-single-btn');
+      clearBtn.addEventListener('click', () => drawDottedLetter(canvas, letter));
+    });
+  }
+
+  // 🔹 Initialize (Uyir letters first)
+  createLetterBoxes(uyirEzhuthukal);
+
+  // 🔹 Tab Buttons
+  uyirBtn.addEventListener('click', () => {
+    uyirBtn.classList.add('active');
+    meiBtn.classList.remove('active');
+    createLetterBoxes(uyirEzhuthukal);
+  });
+
+  meiBtn.addEventListener('click', () => {
+    meiBtn.classList.add('active');
+    uyirBtn.classList.remove('active');
+    createLetterBoxes(meiEzhuthukal);
+  });
+
+  // 🔹 Back Button (go to previous page)
+  backBtn.addEventListener('click', () => {
+     window.location.href = "class1.html"; 
+  });
+</script>
+
+</body>
+</html>
