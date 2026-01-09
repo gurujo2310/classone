@@ -34,7 +34,7 @@ button {
 <button onclick="checkDrawing()">சரி பார்க்க</button>
 <button onclick="clearCanvas()">அழி</button>
 <div id="result"></div>
-
+<button id="back-btn">⬅️ Back</button>
 
 <script>
   
@@ -256,6 +256,11 @@ function clearCanvas(){
   drawDots();
   document.getElementById("result").innerText="";
 }
+const backBtn = document.getElementById('back-btn');
+
+    backBtn.addEventListener('click', () => {
+      window.location.href = "தமிழ் எழுத்துகள்.html";
+    });
 </script>
 
 </body>
