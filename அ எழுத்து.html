@@ -56,68 +56,111 @@
 
   <button id="back-btn">⬅️ Back</button>
   <script>
-    const canvas = document.getElementById("board");
-    const ctx = canvas.getContext("2d");
-    let drawing = false;
-    let userPath = [];
+const canvas = document.getElementById("board");
+const ctx = canvas.getContext("2d");
 
-    // --- “ஆ” எழுத்து புள்ளிகள் (AA.jpg போல காணும் அமைப்பு) --- 
-    const dotPoints = [
-      { x:290, y:133 }, { x:292, y:175 }, { x:255, y:198 }, { x:212, y:186 }, { x:198, y:150 }, { x:219, y:111 }, { x:269, y:100 }, { x:314, y:104 }, { x:349, y:127 }, { x:376, y:164 },
+let drawing = false;
+let userPath = [];
 
-{ x:382, y:202 }, { x:372, y:241 }, { x:349, y:278 }, { x:322, y:300 }, { x:287, y:321 }, { x:245, y:336 }, { x:199, y:340 }, { x:147, y:336 }, { x:103, y:327 }, { x:63, y:309 },
+// --- “ஆ” எழுத்து புள்ளிகள் ---
+const dotPoints = [
+ { x:290, y:133 }, { x:292, y:175 }, { x:255, y:198 },
+ { x:212, y:186 }, { x:198, y:150 }, { x:219, y:111 },
+ { x:269, y:100 }, { x:314, y:104 }, { x:349, y:127 },
+ { x:376, y:164 }, { x:382, y:202 }, { x:372, y:241 },
+ { x:349, y:278 }, { x:322, y:300 }, { x:287, y:321 },
+ { x:245, y:336 }, { x:199, y:340 }, { x:147, y:336 },
+ { x:103, y:327 }, { x:63, y:309 }, { x:28, y:284 },
+ { x:26, y:249 }, { x:65, y:240 }, { x:109, y:239 },
+ { x:152, y:240 }, { x:195, y:241 }, { x:240, y:241 },
+ { x:284, y:241 }, { x:329, y:241 }, { x:413, y:240 },
+ { x:453, y:239 }, { x:455, y:277 }, { x:455, y:317 },
+ { x:454, y:356 }, { x:454, y:203 }, { x:455, y:165 },
+ { x:452, y:130 }, { x:455, y:89 }
+];
 
-{ x:28, y:284 }, { x:26, y:249 }, { x:65, y:240 }, { x:109, y:239 }, { x:152, y:240 }, { x:195, y:241 }, { x:240, y:241 }, { x:284, y:241 }, { x:329, y:241 }, { x:413, y:240 },
+// dots draw
+function drawDots() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "black";
+  dotPoints.forEach(d => {
+    ctx.beginPath();
+    ctx.arc(d.x, d.y, 4, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+drawDots();
 
-{ x:453, y:239 }, { x:455, y:277 }, { x:455, y:317 }, { x:454, y:356 }, { x:454, y:203 }, { x:455, y:165 }, { x:452, y:130 }, { x:455, y:89 }
+// get position (mouse + touch)
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  if (e.touches) {
+    return {
+      x: e.touches[0].clientX - rect.left,
+      y: e.touches[0].clientY - rect.top
+    };
+  } else {
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+}
 
-         
-    ]
+// start draw
+function startDraw(e) {
+  e.preventDefault();
+  drawing = true;
+  ctx.beginPath();
+}
 
+// draw move
+function drawMove(e) {
+  if (!drawing) return;
+  e.preventDefault();
+  const pos = getPos(e);
+  userPath.push(pos);
+  ctx.strokeStyle = "blue";
+  ctx.lineWidth = 3;
+  ctx.lineTo(pos.x, pos.y);
+  ctx.stroke();
+}
 
+// stop draw
+function stopDraw() {
+  drawing = false;
+}
 
-    // புள்ளிகள் வரை
-    function drawDots() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "black";
-      for (const d of dotPoints) {
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, 4, 0, Math.PI * 2);
-        ctx.fill();
+// mouse events
+canvas.addEventListener("mousedown", startDraw);
+canvas.addEventListener("mousemove", drawMove);
+canvas.addEventListener("mouseup", stopDraw);
+
+// touch events (📱 mobile)
+canvas.addEventListener("touchstart", startDraw);
+canvas.addEventListener("touchmove", drawMove);
+canvas.addEventListener("touchend", stopDraw);
+
+// check
+function checkDrawing() {
+  let matched = 0;
+  dotPoints.forEach(dot => {
+    userPath.some(u => {
+      if (Math.hypot(dot.x - u.x, dot.y - u.y) < 12) {
+        matched++;
+        return true;
       }
-    }
-    drawDots();
-
-    // வரையல்
-    canvas.addEventListener("mousedown", () => { drawing = true; ctx.beginPath(); });
-    canvas.addEventListener("mouseup", () => drawing = false);
-    canvas.addEventListener("mousemove", e => {
-      if (!drawing) return;
-      const r = canvas.getBoundingClientRect();
-      const x = e.clientX - r.left, y = e.clientY - r.top;
-      userPath.push({ x, y });
-      ctx.strokeStyle = "blue"; ctx.lineWidth = 3;
-      ctx.lineTo(x, y); ctx.stroke();
     });
+  });
 
-    // சரிபார்ப்பு
-    function checkDrawing() {
-      let matched = 0;
-      for (const dot of dotPoints) {
-        for (const u of userPath) {
-          const dist = Math.hypot(dot.x - u.x, dot.y - u.y);
-          if (dist < 12) { matched++; break; }
-        }
-      }
-      const percent = matched / dotPoints.length;
-      if (percent >= 1) {
-        document.getElementById("result").innerHTML = "✅ நன்றாக வரையப்பட்டிருக்கிறது!";
-      } else {
-        document.getElementById("result").innerHTML = "❌ புள்ளிகளை சரியாக இணைக்க வேண்டும்!";
-      }
-    }
+  if (matched === dotPoints.length) {
+    result.innerHTML = "✅ நன்றாக எழுதியுள்ளீர்கள்!";
+  } else {
+    result.innerHTML = "❌ இன்னும் சரியாக இணைக்க வேண்டும்!";
+  }
+}
 
-    // அழி
+// அழி
     function clearCanvas() {
       userPath = [];
       drawDots();
@@ -129,9 +172,8 @@
     backBtn.addEventListener('click', () => {
       window.location.href = "தமிழ் எழுத்துகள்.html";
     });
+</script>
 
-
-  </script>
 
 </body>
 

@@ -40,6 +40,7 @@ button {
   
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
+
 let drawing = false;
 let userPath = [];
 
@@ -55,58 +56,96 @@ const dotPoints = [
 
 ]
 
-// புள்ளிகள் வரை
-function drawDots(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle="black";
-  for(const d of dotPoints){
+// draw dots
+function drawDots() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "black";
+  dotPoints.forEach(d => {
     ctx.beginPath();
-    ctx.arc(d.x,d.y,4,0,Math.PI*2);
+    ctx.arc(d.x, d.y, 4, 0, Math.PI * 2);
     ctx.fill();
-  }
+  });
 }
 drawDots();
 
-// வரையல்
-canvas.addEventListener("mousedown",()=>{drawing=true; ctx.beginPath();});
-canvas.addEventListener("mouseup",()=>drawing=false);
-canvas.addEventListener("mousemove",e=>{
-  if(!drawing)return;
-  const r=canvas.getBoundingClientRect();
-  const x=e.clientX-r.left, y=e.clientY-r.top;
-  userPath.push({x,y});
-  ctx.strokeStyle="blue"; ctx.lineWidth=3;
-  ctx.lineTo(x,y); ctx.stroke();
-});
-
-// சரிபார்ப்பு
-function checkDrawing(){
-  let matched=0;
-  for(const dot of dotPoints){
-    for(const u of userPath){
-      const dist=Math.hypot(dot.x-u.x,dot.y-u.y);
-      if(dist<12){ matched++; break; }
-    }
+// get position (mouse + touch)
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  if (e.touches) {
+    return {
+      x: e.touches[0].clientX - rect.left,
+      y: e.touches[0].clientY - rect.top
+    };
   }
-  const percent = matched / dotPoints.length;
-  if(percent>=1){
-    document.getElementById("result").innerHTML="✅ நன்றாக வரையப்பட்டிருக்கிறது!";
-  } else {
-    document.getElementById("result").innerHTML="❌ புள்ளிகளை சரியாக இணைக்க வேண்டும்!";
-  }
+  return {
+    x: e.clientX - rect.left,
+    y: e.clientY - rect.top
+  };
 }
 
-// அழி
-function clearCanvas(){
-  userPath=[];
-  drawDots();
-  document.getElementById("result").innerText="";
+// start draw
+function startDraw(e) {
+  e.preventDefault();
+  drawing = true;
+  ctx.beginPath();
 }
-const backBtn = document.getElementById('back-btn');
 
-    backBtn.addEventListener('click', () => {
-      window.location.href = "தமிழ் எழுத்துகள்.html";
+// draw move
+function drawMove(e) {
+  if (!drawing) return;
+  e.preventDefault();
+  const pos = getPos(e);
+  userPath.push(pos);
+  ctx.strokeStyle = "blue";
+  ctx.lineWidth = 3;
+  ctx.lineTo(pos.x, pos.y);
+  ctx.stroke();
+}
+
+// stop draw
+function stopDraw() {
+  drawing = false;
+}
+
+// mouse
+canvas.addEventListener("mousedown", startDraw);
+canvas.addEventListener("mousemove", drawMove);
+canvas.addEventListener("mouseup", stopDraw);
+
+// 📱 touch
+canvas.addEventListener("touchstart", startDraw);
+canvas.addEventListener("touchmove", drawMove);
+canvas.addEventListener("touchend", stopDraw);
+
+// check
+function checkDrawing() {
+  let matched = 0;
+  dotPoints.forEach(dot => {
+    userPath.some(u => {
+      if (Math.hypot(dot.x - u.x, dot.y - u.y) < 12) {
+        matched++;
+        return true;
+      }
     });
+  });
+
+  result.innerHTML =
+    matched === dotPoints.length
+      ? "✅ நன்றாக எழுதியுள்ளீர்கள்!"
+      : "❌ புள்ளிகளை சரியாக இணைக்க வேண்டும்!";
+}
+
+// clear
+function clearCanvas() {
+  userPath = [];
+  drawDots();
+  result.innerHTML = "";
+}
+
+// back
+document.getElementById("back-btn").onclick = () => {
+  window.location.href = "தமிழ் எழுத்துகள்.html";
+};
 </script>
 
 </body>
